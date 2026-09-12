@@ -1,0 +1,15 @@
+# Core
+django==4.2.17
+djangorestframework==3.15.2
+djangorestframework-simplejwt==5.4.0
+django-cors-headers==4.6.0
+
+# Database
+pymongo==4.11.3
+dnspython==2.7.0
+
+# Config
+python-dotenv==1.0.1
+
+# Production server
+gunicorn==23.0.0

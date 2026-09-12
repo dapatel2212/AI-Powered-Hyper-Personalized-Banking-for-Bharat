@@ -1,2 +1,24 @@
 .agents
 skills-lock.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+venv/
+.env
+
+# Django
+db.sqlite3
+*.log
+staticfiles/
+
+# ML models (large files — ML team manages separately)
+ml_models/*.pkl
+ml_models/*.json
+ml_models/*.h5
+ml_models/*.bin
+
+# IDE
+.vscode/
+.idea/
