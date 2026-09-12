@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { useLoanStore } from '../store/useLoanStore'
 import { useDemoStore } from '../store/useDemoStore'
 
@@ -27,9 +28,25 @@ function LoansPage() {
   const [calcRate, setCalcRate] = useState(11.5)
   const [supportModalOpen, setSupportModalOpen] = useState(false)
   const [supportMessage, setSupportMessage] = useState('')
-  const [panInput, setPanInput] = useState('ABCDE1234F')
-  const [aadhaarInput, setAadhaarInput] = useState('XXXX-XXXX-8921')
-  const [appId, setAppId] = useState('')
+  const panInput = 'ABCDE1234F'
+  const aadhaarInput = 'XXXX-XXXX-8921'
+  const [appId, setAppId] = useState(loanDetails.applicationId || '')
+
+  // Helper to completely clear old loan info so it does not affect new loan requests
+  const handleResetLoan = () => {
+    resetLoan()
+    setAppId('')
+    setCalcAmount(50000)
+    setCalcTenure(12)
+    setCalcRate(11.5)
+    setSupportModalOpen(false)
+    setSupportMessage('')
+  }
+
+  // Clear previous loan state when profile changes
+  React.useEffect(() => {
+    handleResetLoan()
+  }, [activeProfile.id])
 
   // Compute EMI
   const monthlyRate = calcRate / (12 * 100)
@@ -129,7 +146,6 @@ function LoansPage() {
     const generatedId = `LN_${Math.random().toString(36).substring(2, 9).toUpperCase()}`
     setAppId(generatedId)
     updateLoanDetails({ applicationId: generatedId })
-    nextStep()
   }
 
   return (
@@ -145,7 +161,7 @@ function LoansPage() {
           </p>
         </div>
         <button
-          onClick={resetLoan}
+          onClick={handleResetLoan}
           className="text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 underline"
         >
           Reset Application
@@ -399,6 +415,7 @@ function LoansPage() {
                 <input
                   type="text"
                   disabled
+                  readOnly
                   value={activeProfile.name}
                   className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-not-allowed"
                 />
@@ -411,6 +428,7 @@ function LoansPage() {
                 <input
                   type="text"
                   disabled
+                  readOnly
                   value={activeProfile.displaySegment}
                   className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-not-allowed"
                 />
@@ -422,9 +440,10 @@ function LoansPage() {
                 </label>
                 <input
                   type="text"
+                  disabled
+                  readOnly
                   value={panInput}
-                  onChange={(e) => setPanInput(e.target.value.toUpperCase())}
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-mono font-bold focus:ring-1 focus:ring-indigo-600 outline-none"
+                  className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-mono font-bold text-slate-700 dark:text-slate-300 cursor-not-allowed"
                 />
               </div>
 
@@ -434,9 +453,10 @@ function LoansPage() {
                 </label>
                 <input
                   type="text"
+                  disabled
+                  readOnly
                   value={aadhaarInput}
-                  onChange={(e) => setAadhaarInput(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-mono font-bold focus:ring-1 focus:ring-indigo-600 outline-none"
+                  className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-mono font-bold text-slate-700 dark:text-slate-300 cursor-not-allowed"
                 />
               </div>
             </div>
@@ -645,13 +665,14 @@ function LoansPage() {
 
                 <div className="pt-4 flex justify-center gap-3">
                   <button
-                    onClick={resetLoan}
+                    onClick={handleResetLoan}
                     className="px-5 py-2 text-xs font-bold rounded-xl border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-50"
                   >
                     Apply for Another Loan
                   </button>
                   <Link
                     to="/dashboard"
+                    onClick={handleResetLoan}
                     className="px-5 py-2 text-xs font-bold rounded-xl bg-indigo-900 text-white hover:bg-indigo-800"
                   >
                     Return to Dashboard

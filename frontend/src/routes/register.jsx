@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../store/authStore'
 import { useDemoStore } from '../store/useDemoStore'
 
@@ -9,6 +10,7 @@ export const Route = createFileRoute('/register')({
 
 function RegisterPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { setCustomer } = useAuthStore()
   const { setActiveProfile } = useDemoStore()
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { useDemoStore } from '../store/useDemoStore'
 
 export const Route = createFileRoute('/_auth/literacy')({
@@ -159,6 +160,7 @@ Key Principles:
 
 function LiteracyPage() {
   const { activeProfile } = useDemoStore()
+  const { t } = useTranslation()
   const [activeLessonId, setActiveLessonId] = useState(LESSONS[0].id)
   const [quizState, setQuizState] = useState({})
   const [totalPoints, setTotalPoints] = useState(45)

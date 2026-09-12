@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import {
   ResponsiveContainer,
   BarChart,
@@ -61,6 +62,7 @@ const PIE_CATEGORIES = {
 
 function DashboardPage() {
   const { activeProfile } = useDemoStore()
+  const { t } = useTranslation()
 
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -91,7 +93,11 @@ function DashboardPage() {
   }
 
   const isStressed = data.stressScore > 50
-  const pieBreakdown = PIE_CATEGORIES[data.segment] || PIE_CATEGORIES.seasonal_earners
+  const rawPieBreakdown = PIE_CATEGORIES[data.segment] || PIE_CATEGORIES.seasonal_earners
+  const pieBreakdown = rawPieBreakdown.map((item) => ({
+    ...item,
+    name: t(`pie.${item.name}`, item.name),
+  }))
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -134,13 +140,13 @@ function DashboardPage() {
         <div className="bg-indigo-900 dark:bg-slate-900 text-white rounded-3xl p-6 border border-indigo-800 dark:border-slate-800 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-indigo-200 dark:text-slate-400">
-              Available Balance
+              {t('dashboard.availableBalance', 'Available Balance')}
             </span>
             <button
               onClick={() => setShowBalance(!showBalance)}
               className="text-[11px] font-bold text-indigo-200 dark:text-indigo-400 hover:underline cursor-pointer"
             >
-              {showBalance ? 'Hide balance' : 'Show balance'}
+              {showBalance ? t('dashboard.hideBalance', 'Hide balance') : t('dashboard.showBalance', 'Show balance')}
             </button>
           </div>
           <div className="my-4">
@@ -152,7 +158,7 @@ function DashboardPage() {
             </div>
           </div>
           <div className="pt-3 border-t border-indigo-800 dark:border-slate-800 flex justify-between text-xs">
-            <span className="text-indigo-200 dark:text-slate-400">Monthly Inflow</span>
+            <span className="text-indigo-200 dark:text-slate-400">{t('dashboard.monthlyIncome', 'Monthly Income')}</span>
             <span className="font-bold">₹{data.monthlyIncome.toLocaleString('en-IN')}</span>
           </div>
         </div>
@@ -161,7 +167,7 @@ function DashboardPage() {
         <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Wellness Index
+              {t('dashboard.wellnessIndex', 'Wellness Index')}
             </span>
             <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
               {data.status} Status
@@ -197,16 +203,16 @@ function DashboardPage() {
         <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Stress Diagnostic
+              {t('dashboard.stressDiagnostic', 'Stress Diagnostic')}
             </span>
             <span
-              className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+              className={`text-xs font-bold px-2 py-0.5 rounded ${
                 !isStressed
                   ? 'bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400'
                   : 'bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-400'
               }`}
             >
-              {!isStressed ? 'Safe Margin' : 'Action Required'}
+              {!isStressed ? 'Low Risk' : 'Elevated Stress'}
             </span>
           </div>
           <div className="my-3">
@@ -214,34 +220,34 @@ function DashboardPage() {
               <span className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
                 {data.stressScore}
               </span>
-              <span className="text-sm font-semibold text-slate-400">/ 100 Stress</span>
+              <span className="text-sm font-semibold text-slate-400">/ 100</span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
               {!isStressed
-                ? 'Borrowing limits unlocked. Debt-to-income is well within safe thresholds.'
-                : 'Responsible banking threshold (50) exceeded. Credit expansion locked.'}
+                ? 'Healthy buffer. Low vulnerability to unexpected expenses.'
+                : 'Ethical guardrails active to protect your financial health.'}
             </p>
           </div>
           <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between text-xs">
-            <span className="text-slate-500 dark:text-slate-400">Upcoming EMI</span>
-            <span className="font-bold text-slate-800 dark:text-slate-200">
-              {data.nextEmi ? `₹${data.nextEmi.toLocaleString('en-IN')}` : 'None'}
+            <span className="text-slate-500 dark:text-slate-400">Status</span>
+            <span className="font-bold text-slate-800 dark:text-slate-200 font-mono">
+              {!isStressed ? 'STABLE' : 'PROTECTED'}
             </span>
           </div>
         </div>
       </div>
 
-      {/* 3. Analytics Charts Grid: Money Flow & Category Spending */}
+      {/* 3. Analytics & Spending Breakdown Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Money Flow Inflow vs Outflow */}
+        {/* Money Flow Bar Chart */}
         <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                Money Flow Analysis
+                {t('dashboard.moneyFlow', 'Money Flow Analytics')}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Inflow vs Outflow Cash Trajectory
+                Income vs Expenses ({trendRange})
               </p>
             </div>
             {/* Period Range Toggles */}
@@ -280,7 +286,7 @@ function DashboardPage() {
                   tickFormatter={(val) => `₹${val / 1000}k`}
                 />
                 <Tooltip
-                  formatter={(value) => [`₹${value.toLocaleString('en-IN')}`, '']}
+                  formatter={(value, name) => [`₹${value.toLocaleString('en-IN')}`, name]}
                   contentStyle={{
                     backgroundColor: '#0f172a',
                     borderColor: '#334155',
@@ -292,8 +298,8 @@ function DashboardPage() {
                 <Legend
                   wrapperStyle={{ paddingTop: '12px', fontSize: '11px' }}
                 />
-                <Bar dataKey="income" name="Inflow (Income)" fill="#1a237e" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="expense" name="Outflow (Expenses)" fill="#ff6f00" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="income" name={t('money.inflow', 'Inflow (Income)')} fill="#1a237e" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="expense" name={t('money.outflow', 'Outflow (Expenses)')} fill="#ff6f00" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

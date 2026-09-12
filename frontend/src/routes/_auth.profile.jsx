@@ -1,5 +1,6 @@
 import React from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { useDemoStore } from '../store/useDemoStore'
 import { useAuthStore } from '../store/authStore'
 
@@ -17,6 +18,7 @@ const PROFILE_METADATA = {
 
 function ProfilePage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { activeProfile } = useDemoStore()
   const { logout } = useAuthStore()
 
@@ -32,10 +34,10 @@ function ProfilePage() {
       {/* Title */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-          Customer Profile & Account Details
+          {t('profile.title', 'Customer Profile & Account Details')}
         </h1>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-          Verified Banking Credentials & Demographic Records
+          {t('profile.subtitle', 'Verified Banking Credentials & Demographic Records')}
         </p>
       </div>
 
@@ -88,7 +90,7 @@ function ProfilePage() {
       {/* Account & Identification Ledger */}
       <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
         <h3 className="text-sm font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
-          Identification & Demographic Data
+          {t('profile.personalInfo', 'Identification & Demographic Data')}
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
@@ -130,7 +132,7 @@ function ProfilePage() {
 
           <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-850">
             <span className="text-slate-400 block text-[10px] uppercase font-bold mb-1">
-              Preferred Banking Language
+              {t('profile.preferredLanguage', 'Preferred Banking Language')}
             </span>
             <span className="font-bold text-slate-800 dark:text-slate-200">
               {activeProfile.languageName} ({activeProfile.language.toUpperCase()})
@@ -163,7 +165,7 @@ function ProfilePage() {
           onClick={handleLogout}
           className="px-6 py-2.5 text-xs font-bold rounded-xl bg-red-600 hover:bg-red-700 text-white transition shadow-sm"
         >
-          Sign Out of BankBuddy
+          {t('nav.logout', 'Sign Out of BankBuddy')}
         </button>
       </div>
     </div>

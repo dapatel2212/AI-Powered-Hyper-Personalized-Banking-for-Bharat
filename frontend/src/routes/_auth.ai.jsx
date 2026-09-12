@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { useDemoStore } from '../store/useDemoStore'
 import api from '../services/api'
 
@@ -9,6 +10,7 @@ export const Route = createFileRoute('/_auth/ai')({
 
 function AIPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { activeProfile, canApplyForLoan } = useDemoStore()
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')

@@ -2,15 +2,21 @@ import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCustomerStore } from '../../store/customerStore'
 import { useAuthStore } from '../../store/authStore'
+import { useDemoStore } from '../../store/useDemoStore'
 
 const SUPPORTED_LANGUAGES = [
+  { code: 'gu', name: 'Gujarati', native: 'ગુજરાતી' },
   { code: 'hi', name: 'Hindi', native: 'हिंदी' },
   { code: 'en', name: 'English', native: 'English' },
   { code: 'ta', name: 'Tamil', native: 'தமிழ்' },
   { code: 'mr', name: 'Marathi', native: 'मराठी' },
+  { code: 'kn', name: 'Kannada', native: 'ಕನ್ನಡ' },
   { code: 'bn', name: 'Bengali', native: 'বাংলা' },
   { code: 'te', name: 'Telugu', native: 'తెలుగు' },
-  { code: 'gu', name: 'Gujarati', native: 'ગુજરાતી' },
+  { code: 'ml', name: 'Malayalam', native: 'മലയാളം' },
+  { code: 'pa', name: 'Punjabi', native: 'ਪੰਜਾਬੀ' },
+  { code: 'or', name: 'Odia', native: 'ଓଡ଼ିଆ' },
+  { code: 'as', name: 'Assamese', native: 'অসমীয়া' },
 ]
 
 export default function LanguageSwitcher({ className = '' }) {
@@ -23,7 +29,7 @@ export default function LanguageSwitcher({ className = '' }) {
   )
 
   useEffect(() => {
-    const active = (i18n.language || 'en').split('-')[0]
+    const active = (i18n.language || localStorage.getItem('preferred_language') || 'en').split('-')[0]
     setCurrentLang(active)
   }, [i18n.language])
 
@@ -32,6 +38,7 @@ export default function LanguageSwitcher({ className = '' }) {
     setCurrentLang(lang)
     await i18n.changeLanguage(lang)
     localStorage.setItem('preferred_language', lang)
+    useDemoStore.getState().updateActiveProfileLanguage(lang)
 
     if (customer?.customer_id) {
       try {

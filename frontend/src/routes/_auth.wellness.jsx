@@ -1,5 +1,6 @@
 import React from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import {
   Radar,
   RadarChart,
@@ -68,7 +69,12 @@ const HISTORICAL_TREND = [
 
 function WellnessPage() {
   const { activeProfile } = useDemoStore()
-  const radarData = RADAR_DATA_SETS[activeProfile.segment] || RADAR_DATA_SETS.seasonal_earners
+  const { t } = useTranslation()
+  const rawRadarData = RADAR_DATA_SETS[activeProfile.segment] || RADAR_DATA_SETS.seasonal_earners
+  const radarData = rawRadarData.map((item) => ({
+    ...item,
+    subject: t(`wellness.radar.${item.subject}`, item.subject),
+  }))
   const isStressed = activeProfile.stressScore > 50
 
   return (
@@ -76,10 +82,10 @@ function WellnessPage() {
       {/* Title */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-          Financial Wellness & Resilience Index
+          {t('wellness.title', 'Financial Wellness & Resilience Index')}
         </h1>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-          Comprehensive 5-dimension diagnostic for {activeProfile.name} ({activeProfile.displaySegment})
+          {t('wellness.subtitle', 'Comprehensive 5-dimension diagnostic for')} {activeProfile.name} ({t(`segments.${activeProfile.segment}`, activeProfile.displaySegment)})
         </p>
       </div>
 
@@ -88,7 +94,7 @@ function WellnessPage() {
         <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
           <div className="flex justify-between items-center">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              Wellness Index
+              {t('wellness.wellnessScore', 'Wellness Index')}
             </span>
             <span
               className={`text-[10px] font-bold px-2 py-0.5 rounded ${
@@ -125,7 +131,7 @@ function WellnessPage() {
         <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
           <div className="flex justify-between items-center">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              Stress Score
+              {t('wellness.stressScore', 'Stress Score')}
             </span>
             <span
               className={`text-[10px] font-bold px-2 py-0.5 rounded ${
@@ -161,7 +167,7 @@ function WellnessPage() {
 
         <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-            Emergency Buffer Runway
+            {t('wellness.emergencyBuffer', 'Emergency Buffer Runway')}
           </span>
 
           <div className="my-4">
@@ -174,7 +180,7 @@ function WellnessPage() {
           </div>
 
           <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-between text-xs">
-            <span className="text-slate-400">Target Fund</span>
+            <span className="text-slate-400">{t('wellness.targetFund', 'Target Fund')}</span>
             <span className="font-bold font-mono">₹1,50,000</span>
           </div>
         </div>
@@ -187,7 +193,7 @@ function WellnessPage() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                5-Axis Financial Health Radar
+                {t('wellness.radarTitle', '5-Axis Financial Health Radar')}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 Evaluating balance across core financial foundations

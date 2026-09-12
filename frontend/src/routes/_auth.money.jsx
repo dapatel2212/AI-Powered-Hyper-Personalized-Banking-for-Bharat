@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import {
   ResponsiveContainer,
-  AreaChart,
-  Area,
+  ComposedChart,
+  Bar,
+  Line,
   XAxis,
   YAxis,
   Tooltip,
-  BarChart,
-  Bar,
+  Legend,
 } from 'recharts'
 import { useDemoStore } from '../store/useDemoStore'
 import { getTransactionsData, getMoneyFlowTrends } from '../services/mockAdapters'
@@ -19,6 +20,7 @@ export const Route = createFileRoute('/_auth/money')({
 
 function MoneyPage() {
   const { activeProfile } = useDemoStore()
+  const { t } = useTranslation()
   const [range, setRange] = useState('3M')
   const [transactions, setTransactions] = useState([])
   const [trends, setTrends] = useState([])
@@ -26,7 +28,13 @@ function MoneyPage() {
 
   useEffect(() => {
     getTransactionsData(activeProfile.id).then(setTransactions)
-    setTrends(getMoneyFlowTrends(activeProfile.id, range))
+    const rawTrends = getMoneyFlowTrends(activeProfile.id, range)
+    // Add netSurplus field for the liquidity trajectory line
+    const enhancedTrends = rawTrends.map((item) => ({
+      ...item,
+      netSurplus: Math.max(0, item.income - item.expense),
+    }))
+    setTrends(enhancedTrends)
   }, [activeProfile.id, range])
 
   const monthlyIncome = activeProfile.monthlyIncome
@@ -41,14 +49,14 @@ function MoneyPage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      {/* Title */}
+      {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-            My Money Analytics
+            {t('money.title', 'My Money Analytics')}
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Cash Flow, Expenditure Insights & Transaction Records
+            {t('money.subtitle', 'Cash Flow, Expenditure Insights & Transaction Records')}
           </p>
         </div>
         <div className="flex items-center gap-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-1 rounded-xl self-start">
@@ -58,8 +66,8 @@ function MoneyPage() {
               onClick={() => setRange(r)}
               className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
                 range === r
-                  ? 'bg-indigo-900 dark:bg-indigo-600 text-white'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                  ? 'bg-indigo-900 dark:bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               {r}
@@ -68,121 +76,153 @@ function MoneyPage() {
         </div>
       </div>
 
-      {/* Metric Cards */}
+      {/* Metric Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            Total Inflow (Monthly)
+          <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+            {t('dashboard.totalInflow', 'Total Inflow (Monthly)')}
           </span>
           <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-2">
             ₹{monthlyIncome.toLocaleString('en-IN')}
           </div>
-          <span className="text-[10px] font-bold text-green-600 dark:text-green-400 mt-1 inline-block">
-            Verified Regular
+          <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mt-1 inline-block">
+            {t('money.verifiedRegular', 'Verified Regular Cash Flow')}
           </span>
         </div>
 
         <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            Total Outflow (Monthly)
+          <span className="text-[11px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+            {t('dashboard.totalOutflow', 'Total Outflow (Monthly)')}
           </span>
           <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-2">
             ₹{monthlyExpense.toLocaleString('en-IN')}
           </div>
-          <span className="text-[10px] font-bold text-slate-500 mt-1 inline-block">
-            Essentials + Obligations
+          <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mt-1 inline-block">
+            {t('money.essentials', 'Essentials + Obligations')}
           </span>
         </div>
 
         <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            Net Monthly Surplus
+          <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+            {t('dashboard.netSurplus', 'Net Monthly Surplus')}
           </span>
           <div className="text-2xl font-extrabold text-indigo-900 dark:text-indigo-400 mt-2">
             ₹{monthlySavings.toLocaleString('en-IN')}
           </div>
           <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 mt-1 inline-block">
-            {activeProfile.savingsRate}% Savings Ratio
+            {activeProfile.savingsRate}% {t('dashboard.savingsRate', 'Savings Ratio')}
           </span>
         </div>
 
         <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            Active EMI Total
+            {t('dashboard.activeEmi', 'Active EMI Total')}
           </span>
           <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-2">
             {activeProfile.upcomingEmi ? `₹${activeProfile.upcomingEmi.toLocaleString('en-IN')}` : '₹0'}
           </div>
-          <span className="text-[10px] font-bold text-slate-500 mt-1 inline-block">
+          <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mt-1 inline-block">
             {activeProfile.upcomingEmi ? 'Due by 10th of Month' : 'No Current Dues'}
           </span>
         </div>
       </div>
 
-      {/* Cash Flow Timeline Chart */}
-      <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
+      {/* Modern Premium Dual-Axis Composed Financial Chart */}
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
           <div>
-            <h2 className="text-base font-bold text-slate-900 dark:text-white">
-              Cumulative Inflow vs Outflow Trend
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Visualizing liquidity stability and burn rate across periods
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                {t('money.cumulativeTrend', 'Cash Flow & Net Liquidity Trajectory')}
+              </h2>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400">
+                Audited Ledger
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Comparing Monthly Inflows (Income), Outflows (Expenses) & Liquidity Buffer
             </p>
           </div>
-          <span className="text-xs font-mono text-slate-400 font-bold">{range} Period</span>
+          <div className="flex items-center gap-4 text-xs font-semibold shrink-0">
+            <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+              <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span>
+              {t('money.inflow', 'Inflow')}
+            </span>
+            <span className="flex items-center gap-1.5 text-rose-500 dark:text-rose-400">
+              <span className="w-2.5 h-2.5 rounded-sm bg-rose-500 inline-block"></span>
+              {t('money.outflow', 'Outflow')}
+            </span>
+            <span className="flex items-center gap-1.5 text-indigo-500 dark:text-indigo-400">
+              <span className="w-2.5 h-0.5 bg-indigo-500 inline-block"></span>
+              {t('money.netSurplus', 'Net Surplus')}
+            </span>
+          </div>
         </div>
 
-        <div className="h-64 w-full">
+        <div className="h-72 w-full pt-2">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={trends} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <ComposedChart data={trends} margin={{ top: 15, right: 15, left: -15, bottom: 5 }}>
               <defs>
-                <linearGradient id="inflowGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#1a237e" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#1a237e" stopOpacity={0.0} />
+                <linearGradient id="inflowBarGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#10b981" stopOpacity={0.9} />
+                  <stop offset="100%" stopColor="#059669" stopOpacity={0.65} />
                 </linearGradient>
-                <linearGradient id="outflowGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ff6f00" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#ff6f00" stopOpacity={0.0} />
+                <linearGradient id="outflowBarGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#f43f5e" stopOpacity={0.9} />
+                  <stop offset="100%" stopColor="#e11d48" stopOpacity={0.65} />
                 </linearGradient>
               </defs>
-              <XAxis dataKey="period" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
+              <XAxis
+                dataKey="period"
+                stroke="#64748b"
+                fontSize={11}
+                tickLine={false}
+                axisLine={{ stroke: '#334155', strokeWidth: 1 }}
+              />
               <YAxis
-                stroke="#94a3b8"
+                stroke="#64748b"
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(v) => `₹${v / 1000}k`}
               />
               <Tooltip
-                formatter={(val) => [`₹${val.toLocaleString('en-IN')}`, '']}
+                formatter={(val, name) => [`₹${val.toLocaleString('en-IN')}`, name]}
                 contentStyle={{
-                  backgroundColor: '#0f172a',
-                  borderColor: '#334155',
-                  borderRadius: '12px',
-                  color: '#fff',
+                  backgroundColor: '#090d16',
+                  borderColor: '#1e293b',
+                  borderRadius: '16px',
+                  boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5)',
+                  color: '#f8fafc',
                   fontSize: '12px',
+                  padding: '12px 16px',
                 }}
+                itemStyle={{ padding: '2px 0' }}
               />
-              <Area
-                type="monotone"
+              <Bar
                 dataKey="income"
-                name="Inflow"
-                stroke="#1a237e"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#inflowGrad)"
+                name={t('money.inflow', 'Inflow (Income)')}
+                fill="url(#inflowBarGrad)"
+                barSize={24}
+                radius={[6, 6, 0, 0]}
               />
-              <Area
-                type="monotone"
+              <Bar
                 dataKey="expense"
-                name="Outflow"
-                stroke="#ff6f00"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#outflowGrad)"
+                name={t('money.outflow', 'Outflow (Expenses)')}
+                fill="url(#outflowBarGrad)"
+                barSize={24}
+                radius={[6, 6, 0, 0]}
               />
-            </AreaChart>
+              <Line
+                type="monotone"
+                dataKey="netSurplus"
+                name={t('money.netSurplus', 'Net Surplus')}
+                stroke="#818cf8"
+                strokeWidth={3}
+                dot={{ r: 5, fill: '#6366f1', stroke: '#ffffff', strokeWidth: 2 }}
+                activeDot={{ r: 7, fill: '#818cf8', stroke: '#ffffff', strokeWidth: 2 }}
+              />
+            </ComposedChart>
           </ResponsiveContainer>
         </div>
       </div>
@@ -194,7 +234,7 @@ function MoneyPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                Verified Transactions
+                {t('money.verifiedTxns', 'Verified Transactions')}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 Categorized ledger with audit validation
@@ -211,7 +251,7 @@ function MoneyPage() {
                       : 'text-slate-500 dark:text-slate-400'
                   }`}
                 >
-                  {f}
+                  {f === 'all' ? t('money.filterAll', 'All') : f === 'credit' ? t('money.filterCredit', 'Credit') : t('money.filterDebit', 'Debit')}
                 </button>
               ))}
             </div>
@@ -225,14 +265,14 @@ function MoneyPage() {
                     {tx.title}
                   </div>
                   <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                    {tx.category} &bull; {tx.date}
+                    {t(`pie.${tx.category}`, tx.category)} &bull; {tx.date}
                   </div>
                 </div>
                 <div className="text-right">
                   <div
                     className={`text-xs font-mono font-bold ${
                       tx.type === 'credit'
-                        ? 'text-green-600 dark:text-green-400'
+                        ? 'text-emerald-600 dark:text-emerald-400'
                         : tx.type === 'failed'
                         ? 'text-red-500'
                         : 'text-slate-900 dark:text-slate-100'
@@ -243,8 +283,8 @@ function MoneyPage() {
                   <span
                     className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
                       tx.status === 'Completed'
-                        ? 'bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400'
-                        : 'bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-400'
+                        ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400'
+                        : 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-400'
                     }`}
                   >
                     {tx.status}
@@ -255,11 +295,11 @@ function MoneyPage() {
           </div>
         </div>
 
-        {/* Upcoming Payments & Calendar */}
+        {/* Upcoming Obligations Card */}
         <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
           <div>
             <h2 className="text-base font-bold text-slate-900 dark:text-white mb-1">
-              Upcoming Obligations
+              {t('money.upcomingObligations', 'Upcoming Obligations')}
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
               Scheduled debits & calendar reminders
@@ -269,7 +309,7 @@ function MoneyPage() {
               <div className="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850">
                 <div className="flex justify-between items-center text-xs font-bold text-slate-900 dark:text-slate-100 mb-1">
                   <span>Mandatory Auto-Debit</span>
-                  <span className="font-mono text-red-600 dark:text-red-400">
+                  <span className="font-mono text-rose-600 dark:text-rose-400">
                     {activeProfile.upcomingEmi ? `₹${activeProfile.upcomingEmi.toLocaleString('en-IN')}` : 'None'}
                   </span>
                 </div>
@@ -291,7 +331,7 @@ function MoneyPage() {
               <div className="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850">
                 <div className="flex justify-between items-center text-xs font-bold text-slate-900 dark:text-slate-100 mb-1">
                   <span>Monthly Savings Target</span>
-                  <span className="font-mono text-green-600 dark:text-green-400">
+                  <span className="font-mono text-emerald-600 dark:text-emerald-400">
                     ₹{monthlySavings.toLocaleString('en-IN')}
                   </span>
                 </div>

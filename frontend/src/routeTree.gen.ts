@@ -23,7 +23,6 @@ import { Route as AuthMoneyRouteImport } from './routes/_auth.money'
 import { Route as AuthProfileRouteImport } from './routes/_auth.profile'
 import { Route as AuthRecommendationsRouteImport } from './routes/_auth.recommendations'
 import { Route as AuthWellnessRouteImport } from './routes/_auth.wellness'
-import { Route as AuthWhatsappRouteImport } from './routes/_auth.whatsapp'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -94,11 +93,6 @@ const AuthWellnessRoute = AuthWellnessRouteImport.update({
   path: '/wellness',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthWhatsappRoute = AuthWhatsappRouteImport.update({
-  id: '/whatsapp',
-  path: '/whatsapp',
-  getParentRoute: () => AuthRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -114,7 +108,6 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthProfileRoute
   '/recommendations': typeof AuthRecommendationsRoute
   '/wellness': typeof AuthWellnessRoute
-  '/whatsapp': typeof AuthWhatsappRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -130,7 +123,6 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthProfileRoute
   '/recommendations': typeof AuthRecommendationsRoute
   '/wellness': typeof AuthWellnessRoute
-  '/whatsapp': typeof AuthWhatsappRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -148,7 +140,6 @@ export interface FileRoutesById {
   '/_auth/profile': typeof AuthProfileRoute
   '/_auth/recommendations': typeof AuthRecommendationsRoute
   '/_auth/wellness': typeof AuthWellnessRoute
-  '/_auth/whatsapp': typeof AuthWhatsappRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -166,7 +157,6 @@ export interface FileRouteTypes {
     | '/profile'
     | '/recommendations'
     | '/wellness'
-    | '/whatsapp'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -182,7 +172,6 @@ export interface FileRouteTypes {
     | '/profile'
     | '/recommendations'
     | '/wellness'
-    | '/whatsapp'
   id:
     | '__root__'
     | '/'
@@ -199,7 +188,6 @@ export interface FileRouteTypes {
     | '/_auth/profile'
     | '/_auth/recommendations'
     | '/_auth/wellness'
-    | '/_auth/whatsapp'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -310,13 +298,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthWellnessRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/whatsapp': {
-      id: '/_auth/whatsapp'
-      path: '/whatsapp'
-      fullPath: '/whatsapp'
-      preLoaderRoute: typeof AuthWhatsappRouteImport
-      parentRoute: typeof AuthRoute
-    }
   }
 }
 
@@ -330,7 +311,6 @@ interface AuthRouteChildren {
   AuthProfileRoute: typeof AuthProfileRoute
   AuthRecommendationsRoute: typeof AuthRecommendationsRoute
   AuthWellnessRoute: typeof AuthWellnessRoute
-  AuthWhatsappRoute: typeof AuthWhatsappRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
@@ -343,7 +323,6 @@ const AuthRouteChildren: AuthRouteChildren = {
   AuthProfileRoute: AuthProfileRoute,
   AuthRecommendationsRoute: AuthRecommendationsRoute,
   AuthWellnessRoute: AuthWellnessRoute,
-  AuthWhatsappRoute: AuthWhatsappRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)

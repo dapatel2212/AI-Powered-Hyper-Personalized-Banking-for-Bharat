@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { createFileRoute, Outlet, Link, useNavigate, useRouterState } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../store/authStore'
 import { useDemoStore, PROFILES } from '../store/useDemoStore'
 import LanguageSwitcher from '../components/Common/LanguageSwitcher'
@@ -9,22 +10,22 @@ export const Route = createFileRoute('/_auth')({
 })
 
 const navItems = [
-  { path: '/dashboard', label: 'Dashboard' },
-  { path: '/money', label: 'My Money' },
-  { path: '/recommendations', label: 'Recommendations' },
-  { path: '/loans', label: 'Loans' },
-  { path: '/wellness', label: 'Wellness' },
-  { path: '/literacy', label: 'Learn' },
-  { path: '/ai', label: 'BankBuddy AI' },
-  { path: '/consent', label: 'Consent & Privacy' },
-  { path: '/profile', label: 'Profile' },
-  { path: '/whatsapp', label: 'WhatsApp Sim' },
+  { path: '/dashboard', key: 'dashboard', label: 'Dashboard' },
+  { path: '/money', key: 'money', label: 'My Money' },
+  { path: '/recommendations', key: 'recommendations', label: 'Recommendations' },
+  { path: '/loans', key: 'loans', label: 'Loans & Credit' },
+  { path: '/wellness', key: 'wellness', label: 'Financial Health' },
+  { path: '/literacy', key: 'literacy', label: 'Learn & Earn' },
+  { path: '/ai', key: 'chat', label: 'BankBuddy AI' },
+  { path: '/consent', key: 'consent', label: 'Privacy & Consent' },
+  { path: '/profile', key: 'profile', label: 'Profile' },
 ]
 
 function AuthLayout() {
   const navigate = useNavigate()
   const routerState = useRouterState()
   const currentPath = routerState.location.pathname
+  const { t, i18n } = useTranslation()
 
   const { logout, isAuthenticated } = useAuthStore()
   const { activeProfile, setActiveProfile } = useDemoStore()
@@ -37,12 +38,14 @@ function AuthLayout() {
     }
   }, [isAuthenticated, navigate])
 
+
+
   const handleLogout = () => {
     logout()
     navigate({ to: '/login', replace: true })
   }
 
-  const currentDate = new Date().toLocaleDateString('en-IN', {
+  const currentDate = new Date().toLocaleDateString(i18n.language || 'en-IN', {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -56,14 +59,14 @@ function AuthLayout() {
         {/* Brand Header */}
         <div className="p-6 border-b border-slate-200 dark:border-white/10">
           <div className="text-sm font-extrabold uppercase tracking-widest text-indigo-900 dark:text-indigo-400">
-            BANKBUDDY
+            {t('app.name', 'BANKBUDDY')}
           </div>
           <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-            AI Banking for Bharat
+            {t('app.tagline', 'AI Banking for Bharat')}
           </div>
         </div>
 
-        {/* Navigation - No Numbers, No Icons, Clean Vertical Spacing */}
+        {/* Navigation - Dynamic Translated Labels */}
         <nav className="flex-1 overflow-y-auto p-4 space-y-1.5 flex flex-col justify-center">
           {navItems.map((item) => {
             const isActive = currentPath === item.path
@@ -77,7 +80,7 @@ function AuthLayout() {
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-slate-100'
                 }`}
               >
-                <span>{item.label}</span>
+                <span>{t(`nav.${item.key}`, item.label)}</span>
                 {isActive && (
                   <span className="w-1.5 h-1.5 rounded-full bg-saffron dark:bg-white"></span>
                 )}
@@ -90,7 +93,7 @@ function AuthLayout() {
         <div className="p-5 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#050A1A]">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-              Active Customer
+              {t('header.activeCustomer', 'Active Customer')}
             </span>
             <span
               className={`text-[10px] font-bold px-2 py-0.5 rounded ${
@@ -101,7 +104,7 @@ function AuthLayout() {
                   : 'bg-red-100 dark:bg-red-950/70 text-red-700 dark:text-red-400'
               }`}
             >
-              Stress {activeProfile.stressScore}
+              {t('header.stress', 'Stress')} {activeProfile.stressScore}
             </span>
           </div>
 
@@ -110,7 +113,7 @@ function AuthLayout() {
               {activeProfile.name}
             </div>
             <div className="text-xs text-slate-500 dark:text-slate-400">
-              {activeProfile.displaySegment} &bull; {activeProfile.languageName}
+              {t(`segments.${activeProfile.segment}`, activeProfile.displaySegment)} &bull; {activeProfile.languageName}
             </div>
           </div>
 
@@ -119,13 +122,13 @@ function AuthLayout() {
               to="/profile"
               className="font-bold text-indigo-700 dark:text-indigo-400 hover:underline"
             >
-              Profile
+              {t('nav.profile', 'Profile')}
             </Link>
             <button
               onClick={handleLogout}
               className="text-red-600 dark:text-red-400 hover:underline font-bold cursor-pointer"
             >
-              Logout
+              {t('nav.logout', 'Logout')}
             </button>
           </div>
         </div>
@@ -137,11 +140,11 @@ function AuthLayout() {
         <header className="h-16 bg-white dark:bg-[#080E1E] border-b border-slate-200 dark:border-white/10 px-4 sm:px-6 flex items-center justify-between gap-3 shrink-0 z-10">
           <div className="flex items-center gap-3">
             <div className="lg:hidden font-extrabold text-sm tracking-tight text-indigo-900 dark:text-indigo-400">
-              BANKBUDDY
+              {t('app.name', 'BANKBUDDY')}
             </div>
             <div className="hidden sm:block">
               <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                {currentDate} &bull; Personal Banking for <span className="font-bold text-slate-800 dark:text-slate-200">{activeProfile.displaySegment}</span>
+                {currentDate} &bull; {t('header.personalBankingFor', 'Personal Banking for')} <span className="font-bold text-slate-800 dark:text-slate-200">{t(`segments.${activeProfile.segment}`, activeProfile.displaySegment)}</span>
               </div>
             </div>
           </div>
@@ -156,7 +159,7 @@ function AuthLayout() {
             >
               {Object.values(PROFILES).map((p) => (
                 <option key={p.id} value={p.id} className="dark:bg-[#080E1E]">
-                  Persona: {p.name} ({p.displaySegment})
+                  {t('header.persona', 'Persona')}: {p.name} ({t(`segments.${p.segment}`, p.displaySegment)})
                 </option>
               ))}
             </select>
@@ -189,13 +192,13 @@ function AuthLayout() {
                       : 'border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-[#0D162B]'
                   }`}
                 >
-                  {item.label}
+                  {t(`nav.${item.key}`, item.label)}
                 </Link>
               ))}
             </div>
             <div className="pt-2 border-t border-slate-100 dark:border-white/10 flex justify-between items-center text-xs">
               <span className="text-slate-500 font-medium">Logged as: {activeProfile.name}</span>
-              <button onClick={handleLogout} className="text-red-600 font-bold">Logout</button>
+              <button onClick={handleLogout} className="text-red-600 font-bold">{t('nav.logout', 'Logout')}</button>
             </div>
           </div>
         )}
@@ -219,7 +222,7 @@ function AuthLayout() {
                     : 'text-slate-500 dark:text-slate-400 font-medium'
                 }`}
               >
-                <span className="text-[11px] leading-tight truncate max-w-[64px]">{item.label}</span>
+                <span className="text-[11px] leading-tight truncate max-w-[64px]">{t(`nav.${item.key}`, item.label)}</span>
                 {isActive && <span className="w-1 h-1 rounded-full bg-saffron dark:bg-indigo-400 mt-0.5"></span>}
               </Link>
             )

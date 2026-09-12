@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { useDemoStore } from '../store/useDemoStore'
 import { getRecommendationsData } from '../services/mockAdapters'
 
@@ -9,6 +10,7 @@ export const Route = createFileRoute('/_auth/recommendations')({
 
 function RecommendationsPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { activeProfile, canApplyForLoan } = useDemoStore()
   const [recommendations, setRecommendations] = useState([])
   const [dismissedIds, setDismissedIds] = useState([])
@@ -48,14 +50,14 @@ function RecommendationsPage() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-              AI Recommendations
+              {t('recommendations.title', 'AI Recommendations')}
             </h1>
             <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400">
-              Max 3 / Session
+              {t('recommendations.maxSession', 'Max 3 / Session')}
             </span>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Explainable & ethical financial recommendations for {activeProfile.name} ({activeProfile.displaySegment})
+            {t('recommendations.subtitle', 'Explainable & ethical financial recommendations for')} {activeProfile.name} ({t(`segments.${activeProfile.segment}`, activeProfile.displaySegment)})
           </p>
         </div>
       </div>
@@ -63,13 +65,13 @@ function RecommendationsPage() {
       {/* Fairness & Ethics Guarantee Notice */}
       <div className="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/60 text-xs text-indigo-950 dark:text-indigo-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div className="font-bold mb-0.5">Algorithmic Fairness Verification</div>
+          <div className="font-bold mb-0.5">{t('recommendations.fairnessTitle', 'Algorithmic Fairness Verification')}</div>
           <div className="text-indigo-800 dark:text-indigo-300">
-            Passed fairness checks. Caste, gender, religion, and sensitive traits are strictly excluded from recommendation weights. Modeled entirely on cash flows, liquidity buffers, and stated goals.
+            {t('recommendations.fairnessMessage', 'Passed fairness checks. Caste, gender, religion, and sensitive traits are strictly excluded from recommendation weights. Modeled entirely on cash flows, liquidity buffers, and stated goals.')}
           </div>
         </div>
         <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-300 shrink-0">
-          Responsible AI Certified
+          {t('recommendations.responsibleAi', 'Responsible AI Certified')}
         </span>
       </div>
 
@@ -82,22 +84,27 @@ function RecommendationsPage() {
       {visibleRecs.length === 0 ? (
         <div className="p-12 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
           <h2 className="text-base font-bold text-slate-800 dark:text-slate-200">
-            No active recommendations for this session
+            {t('recommendations.noActive', 'No active recommendations for this session')}
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            You have dismissed or actioned all recommendations. Switch profiles in the header to preview other customer recommendations.
+            {t('recommendations.noActiveSub', 'You have dismissed or actioned all recommendations. Switch profiles in the header to preview other customer recommendations.')}
           </p>
           <button
             onClick={() => setDismissedIds([])}
             className="mt-4 px-4 py-2 text-xs font-bold rounded-xl bg-indigo-900 text-white"
           >
-            Reset Dismissed Items
+            {t('recommendations.resetDismissed', 'Reset Dismissed Items')}
           </button>
         </div>
       ) : (
         <div className="space-y-4">
           {visibleRecs.map((rec, index) => {
             const isExpanded = expandedWhyId === rec.id
+            const translatedTitle = t(`recommendations.items.${rec.id}.title`, rec.title)
+            const translatedCategory = t(`recommendations.categories.${rec.category}`, rec.category)
+            const translatedBenefit = t(`recommendations.items.${rec.id}.benefit`, rec.benefit)
+            const translatedExplanation = t(`recommendations.items.${rec.id}.explanation`, rec.explanation)
+            const translatedActionLabel = t(`recommendations.items.${rec.id}.actionLabel`, rec.actionLabel)
 
             return (
               <div
@@ -111,23 +118,23 @@ function RecommendationsPage() {
                         0{index + 1}
                       </span>
                       <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                        {rec.category}
+                        {translatedCategory}
                       </span>
                     </div>
                     <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                      {rec.title}
+                      {translatedTitle}
                     </h2>
                   </div>
 
                   <div className="flex items-center gap-2 self-start">
                     <span className="text-xs font-extrabold px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400">
-                      {rec.matchScore}% Match
+                      {rec.matchScore}% {t('recommendations.matchScore', 'Match')}
                     </span>
                     <button
                       onClick={() => handleDismiss(rec.id)}
                       className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold px-2 py-1"
                     >
-                      Dismiss
+                      {t('recommendations.dismiss', 'Dismiss')}
                     </button>
                   </div>
                 </div>
@@ -135,11 +142,13 @@ function RecommendationsPage() {
                 {/* Benefit & Explanation */}
                 <div className="mt-4 space-y-2 text-xs leading-relaxed">
                   <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-100 dark:border-slate-800">
-                    <span className="font-bold text-slate-700 dark:text-slate-300">Primary Benefit: </span>
-                    <span className="text-slate-600 dark:text-slate-400">{rec.benefit}</span>
+                    <span className="font-bold text-slate-700 dark:text-slate-300">
+                      {t('recommendations.primaryBenefit', 'Primary Benefit:')}{' '}
+                    </span>
+                    <span className="text-slate-600 dark:text-slate-400">{translatedBenefit}</span>
                   </div>
                   <p className="text-slate-600 dark:text-slate-400">
-                    {rec.explanation}
+                    {translatedExplanation}
                   </p>
                 </div>
 
@@ -148,7 +157,7 @@ function RecommendationsPage() {
                   <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs animate-in fade-in">
                     <div>
                       <span className="font-bold uppercase tracking-wider text-[10px] text-green-700 dark:text-green-400 block mb-2">
-                        Positive Contributing Factors
+                        {t('recommendations.positiveFactors', 'Positive Contributing Factors')}
                       </span>
                       <ul className="space-y-1 text-slate-600 dark:text-slate-400">
                         {rec.positiveFactors.map((f, i) => (
@@ -162,7 +171,7 @@ function RecommendationsPage() {
 
                     <div>
                       <span className="font-bold uppercase tracking-wider text-[10px] text-slate-500 dark:text-slate-400 block mb-2">
-                        Considerations & Risk Notes
+                        {t('recommendations.negativeFactors', 'Considerations & Risk Notes')}
                       </span>
                       <ul className="space-y-1 text-slate-600 dark:text-slate-400">
                         {rec.negativeFactors.map((f, i) => (
@@ -182,14 +191,14 @@ function RecommendationsPage() {
                     onClick={() => setExpandedWhyId(isExpanded ? null : rec.id)}
                     className="text-xs font-bold text-indigo-700 dark:text-indigo-400 hover:underline"
                   >
-                    {isExpanded ? 'Hide Factor Breakdown' : 'Why this recommendation?'}
+                    {isExpanded ? 'Hide Factor Breakdown' : t('recommendations.whyThis', 'Why this recommendation?')}
                   </button>
 
                   <button
                     onClick={() => handleAction(rec)}
                     className="px-4 py-2 text-xs font-bold rounded-xl bg-indigo-900 hover:bg-indigo-800 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white transition shadow-sm"
                   >
-                    {rec.actionLabel}
+                    {translatedActionLabel}
                   </button>
                 </div>
               </div>

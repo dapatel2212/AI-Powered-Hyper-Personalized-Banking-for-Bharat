@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../store/authStore'
 import { useDemoStore, PROFILES } from '../store/useDemoStore'
 
@@ -17,6 +18,7 @@ const DEMO_ACCOUNTS = [
 
 function LoginPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { login, loading, error } = useAuthStore()
   const { setActiveProfile } = useDemoStore()
 

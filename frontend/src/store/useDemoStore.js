@@ -43,8 +43,8 @@ export const PROFILES = {
     email: 'shop@demo.com',
     segment: 'digital_natives',
     displaySegment: 'Shop Owner',
-    language: 'hi',
-    languageName: 'Hindi',
+    language: 'gu',
+    languageName: 'Gujarati',
     stressScore: 45,
     status: 'YELLOW',
     balance: 42000,
@@ -101,8 +101,8 @@ export const useDemoStore = create((set, get) => ({
     const profile = Object.values(PROFILES).find((p) => p.id === profileId)
     if (profile) {
       set({ activeProfile: profile })
-      // Sync preferred language
       localStorage.setItem('preferred_language', profile.language)
+      import('../i18n').then((m) => m.default.changeLanguage(profile.language))
     }
   },
 
@@ -111,14 +111,38 @@ export const useDemoStore = create((set, get) => ({
     if (profile) {
       set({ activeProfile: profile })
       localStorage.setItem('preferred_language', profile.language)
+      import('../i18n').then((m) => m.default.changeLanguage(profile.language))
       return profile
     }
     return null
   },
 
+  updateActiveProfileLanguage: (lang) => {
+    const langNames = {
+      gu: 'Gujarati',
+      hi: 'Hindi',
+      en: 'English',
+      ta: 'Tamil',
+      mr: 'Marathi',
+      kn: 'Kannada',
+      bn: 'Bengali',
+      te: 'Telugu',
+      ml: 'Malayalam',
+      pa: 'Punjabi',
+      or: 'Odia',
+      as: 'Assamese',
+    }
+    set((state) => ({
+      activeProfile: {
+        ...state.activeProfile,
+        language: lang,
+        languageName: langNames[lang] || lang,
+      },
+    }))
+  },
+
   toggleDemoMode: () => set((state) => ({ isDemoMode: !state.isDemoMode })),
 
-  // Enforce ethical AI stress rule: stressScore > 50 blocks credit & borrowing
   canApplyForLoan: () => {
     const profile = get().activeProfile
     return profile.stressScore <= 50

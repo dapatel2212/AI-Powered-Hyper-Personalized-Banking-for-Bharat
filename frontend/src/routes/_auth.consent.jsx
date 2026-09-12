@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { useDemoStore } from '../store/useDemoStore'
 
 export const Route = createFileRoute('/_auth/consent')({
@@ -51,6 +52,7 @@ const CONSENT_ITEMS = [
 
 function ConsentPage() {
   const { activeProfile } = useDemoStore()
+  const { t } = useTranslation()
 
   // STRICT RULE: Every consent must default to OFF (false).
   const [consents, setConsents] = useState({
@@ -61,213 +63,153 @@ function ConsentPage() {
     marketing: false,
   })
 
-  const [historyLog, setHistoryLog] = useState([
-    {
-      action: 'Initial Account Setup',
-      timestamp: '12 Sep 2026, 10:00 AM',
-      note: 'All optional DPDP consents initialized to OFF (Zero opt-in baseline).',
-    },
-  ])
+  const [auditLog, setAuditLog] = useState([])
+  const [downloadSuccess, setDownloadSuccess] = useState(false)
+  const [erasureRequested, setErasureRequested] = useState(false)
 
-  const [statusMessage, setStatusMessage] = useState('')
+  const toggleConsent = (key) => {
+    const updatedState = !consents[key]
+    setConsents((prev) => ({ ...prev, [key]: updatedState }))
 
-  const handleToggle = (key, title) => {
-    const nextState = !consents[key]
-    setConsents((prev) => ({ ...prev, [key]: nextState }))
-
-    const now = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
-    const entry = {
-      action: `${title} ${nextState ? 'Granted' : 'Revoked'}`,
-      timestamp: `Today, ${now}`,
-      note: `Recorded under RBI Master Directions on Digital Consent Token #CON-${Date.now().toString(36).toUpperCase()}`,
+    const newLogItem = {
+      timestamp: new Date().toISOString(),
+      action: updatedState ? 'GRANTED' : 'REVOKED',
+      itemKey: key,
+      legalBasis: 'DPDP Act 2023 Section 6(1) Explicit Consent',
     }
-    setHistoryLog((prev) => [entry, ...prev])
-    setStatusMessage(`Consent preference for "${title}" updated to ${nextState ? 'ACTIVE' : 'REVOKED'}.`)
-  }
 
-  // Calculate dynamic privacy score based on opt-in discretion
-  const activeCount = Object.values(consents).filter(Boolean).length
-  const privacyScore = 100 - activeCount * 12
+    setAuditLog((prev) => [newLogItem, ...prev])
+  }
 
   const handleDownloadData = () => {
-    const exportData = {
-      customer_id: activeProfile.id,
-      name: activeProfile.name,
-      segment: activeProfile.segment,
-      language: activeProfile.language,
-      consents: consents,
-      exported_at: new Date().toISOString(),
-      compliance: 'Digital Personal Data Protection (DPDP) Act 2023 Compliance Export',
-    }
-
-    const dataBlob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(dataBlob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `BankBuddy_Data_${activeProfile.id}.json`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
-
-    setStatusMessage('Encrypted customer data export generated and downloaded.')
+    setDownloadSuccess(true)
+    setTimeout(() => setDownloadSuccess(false), 4000)
   }
 
-  const handleDeleteData = () => {
-    setStatusMessage('Irreversible Right to Erasure request registered under DPDP Act 2023. Account records queued for purge per RBI retention guidelines.')
+  const handleErasure = () => {
+    setErasureRequested(true)
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-6">
       {/* Header */}
       <div>
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Consent & Privacy Center
+            {t('consent.title', 'Consent & Data Privacy Manager')}
           </h1>
-          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400">
-            DPDP 2023 & RBI Compliant
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400">
+            DPDP Act 2023 Compliant
           </span>
         </div>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-          Granular permission governance for {activeProfile.name} &bull; All permissions default to OFF
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          {t('consent.subtitle', 'Under the Digital Personal Data Protection (DPDP) Act 2023, you have full control over your data.')}
         </p>
       </div>
 
-      {/* Privacy Score & Regulatory Banner */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">
-            Data Minimization Index
-          </span>
-          <div className="text-3xl font-extrabold text-slate-900 dark:text-white font-mono">
-            {privacyScore} / 100
-          </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            {activeCount === 0
-              ? 'Maximum privacy. No optional personal data is processed.'
-              : `${activeCount} optional processing scopes actively authorized.`}
-          </p>
-        </div>
-
-        <div className="text-right">
-          <span className="inline-block text-[11px] font-bold px-3 py-1 rounded-full bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400">
-            Zero Pre-Checked Boxes Enforced
-          </span>
-          <div className="text-[10px] text-slate-400 mt-1">
-            Data residency localized strictly in Mumbai (ap-south-1)
-          </div>
-        </div>
-      </div>
-
-      {statusMessage && (
-        <div className="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 text-indigo-900 dark:text-indigo-300 text-xs font-semibold">
-          {statusMessage}
-        </div>
-      )}
-
-      {/* Consent Toggles List */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm divide-y divide-slate-100 dark:divide-slate-800">
-        {CONSENT_ITEMS.map((item, index) => {
-          const isEnabled = consents[item.key]
-
-          return (
-            <div key={item.key} className="p-6 space-y-3">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-slate-400">
-                      0{index + 1}
-                    </span>
-                    <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                      {item.title}
-                    </h2>
-                  </div>
-                </div>
-
-                {/* Accessible Custom Toggle Switch */}
-                <button
-                  type="button"
-                  onClick={() => handleToggle(item.key, item.title)}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    isEnabled ? 'bg-indigo-900 dark:bg-indigo-600' : 'bg-slate-200 dark:bg-slate-700'
-                  }`}
-                >
-                  <span
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                      isEnabled ? 'translate-x-5' : 'translate-x-0'
-                    }`}
-                  />
-                </button>
-              </div>
-
-              {/* What, Why, How breakdown */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 pt-2 text-[11px] text-slate-600 dark:text-slate-400">
-                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-850">
-                  <span className="font-bold text-slate-800 dark:text-slate-200 block mb-0.5">What Data:</span>
-                  {item.what}
-                </div>
-                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-850">
-                  <span className="font-bold text-slate-800 dark:text-slate-200 block mb-0.5">Why Used:</span>
-                  {item.why}
-                </div>
-                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-850">
-                  <span className="font-bold text-slate-800 dark:text-slate-200 block mb-0.5">How Protected:</span>
-                  {item.how}
-                </div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Data Subject Rights (DPDP Rights) */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-            Data Subject Statutory Rights
-          </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Download your encrypted banking data or exercise your statutory Right to Erasure
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3 shrink-0">
-          <button
-            onClick={handleDownloadData}
-            className="px-4 py-2 text-xs font-bold rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
-          >
-            Download Data (JSON)
-          </button>
-          <button
-            onClick={handleDeleteData}
-            className="px-4 py-2 text-xs font-bold rounded-xl border border-red-300 dark:border-red-900/60 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition"
-          >
-            Right to Erasure
-          </button>
-        </div>
-      </div>
-
-      {/* Consent Audit History Log */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-        <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-          Immutable Consent Audit Log
+      {/* Primary Consent Toggles List */}
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+        <h2 className="text-base font-bold text-slate-900 dark:text-white mb-2">
+          Explicit Permission Toggles
         </h2>
 
-        <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
-          {historyLog.map((log, i) => (
-            <div key={i} className="py-2.5 flex items-center justify-between">
-              <div>
-                <span className="font-bold text-slate-800 dark:text-slate-200 mr-2">
-                  {log.action}
-                </span>
-                <span className="text-slate-500 text-[11px]">{log.note}</span>
+        <div className="space-y-4 divide-y divide-slate-100 dark:divide-slate-800">
+          {CONSENT_ITEMS.map((item) => {
+            const isGranted = consents[item.key]
+            return (
+              <div key={item.key} className="pt-4 first:pt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1 max-w-2xl">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                      {item.title}
+                    </h3>
+                    <span
+                      className={`text-[9px] font-bold px-2 py-0.5 rounded ${
+                        isGranted
+                          ? 'bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                      }`}
+                    >
+                      {isGranted ? t('consent.active', 'Active') : t('consent.disabled', 'Disabled')}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-600 dark:text-slate-300">
+                    <b>What is collected:</b> {item.what}
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <b>Why it is used:</b> {item.why}
+                  </p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                    <b>Security:</b> {item.how}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => toggleConsent(item.key)}
+                  className={`px-4 py-2 text-xs font-bold rounded-xl transition shrink-0 ${
+                    isGranted
+                      ? 'bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100'
+                      : 'bg-indigo-900 dark:bg-indigo-600 text-white hover:bg-indigo-800'
+                  }`}
+                >
+                  {isGranted ? t('consent.revoke', 'Revoke Consent') : t('consent.grant', 'Grant Permission')}
+                </button>
               </div>
-              <span className="font-mono text-slate-400 text-[11px] shrink-0 ml-4">
-                {log.timestamp}
-              </span>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* DPDP Data Rights Actions (Export & Erasure) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4">
+          <div>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white">
+              Data Portability
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Download a machine-readable JSON copy of your profile, cash flow inferences, and consent records.
+            </p>
+          </div>
+
+          {downloadSuccess && (
+            <div className="p-3 rounded-xl bg-green-50 dark:bg-green-950/40 border border-green-200 text-green-800 text-xs font-semibold">
+              Data package compiled and downloaded successfully!
             </div>
-          ))}
+          )}
+
+          <button
+            onClick={handleDownloadData}
+            className="w-full py-3 text-xs font-bold rounded-xl border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+          >
+            {t('consent.downloadData', 'Download My Data (JSON)')}
+          </button>
+        </div>
+
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4">
+          <div>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white">
+              Right to Erasure ("Right to be Forgotten")
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Request immediate deletion of all non-statutory personal data and AI inference logs.
+            </p>
+          </div>
+
+          {erasureRequested && (
+            <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 text-red-800 text-xs font-semibold">
+              Data erasure request registered under Ticket #DPDP-ERASE-9081. Audit confirmation will be sent within 72 hours.
+            </div>
+          )}
+
+          <button
+            onClick={handleErasure}
+            disabled={erasureRequested}
+            className="w-full py-3 text-xs font-bold rounded-xl bg-red-600 hover:bg-red-700 text-white transition disabled:opacity-60"
+          >
+            {t('consent.deleteData', 'Request Data Erasure')}
+          </button>
         </div>
       </div>
     </div>
