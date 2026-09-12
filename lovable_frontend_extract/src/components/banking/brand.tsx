@@ -1,0 +1,3 @@
+import { Landmark, Orbit } from "lucide-react";
+import { cn } from "@/lib/utils";
+export function Brand({ compact=false,className }:{compact?:boolean;className?:string}){return <div className={cn("flex items-center gap-3",className)}><div className="relative grid size-11 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-sm"><Landmark className="size-5"/><Orbit className="absolute -right-1 -top-1 size-4 text-saffron"/></div>{!compact&&<div><div className="text-lg font-extrabold leading-none">BankBuddy</div><div className="mt-1 text-[11px] font-semibold uppercase text-muted-foreground">AI Banking for Bharat</div></div>}</div>}

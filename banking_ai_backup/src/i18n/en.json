@@ -1,0 +1,59 @@
+{
+  "login": {
+    "welcome": "Welcome to BankBuddy",
+    "phone": "Phone Number",
+    "otp": "OTP",
+    "sendOtp": "Send OTP",
+    "verifyOtp": "Verify & Login"
+  },
+  "onboarding": {
+    "consentTitle": "Data Consent",
+    "consentTransaction": "Analyze my transaction data for better recommendations",
+    "consentHealth": "Monitor my financial health and alert me of risks",
+    "consentChat": "Enable AI chat assistance",
+    "consentLife": "Predict life events for proactive help",
+    "consentMarketing": "Receive marketing communications",
+    "segmentTitle": "Tell us about yourself",
+    "segments": {
+      "student": "🎓 Student",
+      "salaried": "💼 Salaried",
+      "family": "👨‍👩‍👧 Family",
+      "farmer": "🌾 Farmer",
+      "shop": "🏪 Shop Owner",
+      "gig": "🛵 Gig Worker",
+      "homebuyer": "🏠 Home Buyer"
+    },
+    "continue": "Continue to Dashboard"
+  },
+  "dashboard": {
+    "greeting": "Hello, {{name}}!",
+    "quickBalance": "Quick Balance",
+    "spendingInsights": "Spending Insights",
+    "upcomingEmis": "Upcoming EMIs",
+    "recommendations": "Recommended for You",
+    "quickActions": "Quick Actions",
+    "farmerActions": {
+      "cropLoan": "Crop Loan",
+      "weatherInsurance": "Weather Insurance",
+      "kisanCredit": "Kisan Credit Card"
+    }
+  },
+  "profile": {
+    "title": "My Profile",
+    "dob": "Date of Birth",
+    "aadhaar": "Aadhaar Number",
+    "segment": "Segment",
+    "stressLevel": "Stress Level",
+    "stressLevels": {
+      "green": "Healthy",
+      "yellow": "Caution",
+      "orange": "At Risk",
+      "red": "Critical"
+    }
+  },
+  "common": {
+    "language": "Language",
+    "home": "Home",
+    "profile": "Profile"
+  }
+}

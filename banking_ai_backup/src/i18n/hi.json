@@ -1,0 +1,59 @@
+{
+  "login": {
+    "welcome": "बैंकबडी में आपका स्वागत है",
+    "phone": "फ़ोन नंबर",
+    "otp": "ओटीपी (OTP)",
+    "sendOtp": "ओटीपी भेजें",
+    "verifyOtp": "सत्यापित करें और लॉगिन करें"
+  },
+  "onboarding": {
+    "consentTitle": "डेटा सहमति",
+    "consentTransaction": "बेहतर सुझावों के लिए मेरे लेनदेन डेटा का विश्लेषण करें",
+    "consentHealth": "मेरे वित्तीय स्वास्थ्य की निगरानी करें और जोखिमों की चेतावनी दें",
+    "consentChat": "एआई चैट सहायता सक्षम करें",
+    "consentLife": "सक्रिय सहायता के लिए जीवन की घटनाओं की भविष्यवाणी करें",
+    "consentMarketing": "मार्केटिंग संदेश प्राप्त करें",
+    "segmentTitle": "अपने बारे में बताएं",
+    "segments": {
+      "student": "🎓 छात्र",
+      "salaried": "💼 वेतनभोगी",
+      "family": "👨‍👩‍👧 परिवार",
+      "farmer": "🌾 किसान",
+      "shop": "🏪 दुकानदार",
+      "gig": "🛵 गिग वर्कर",
+      "homebuyer": "🏠 घर खरीदार"
+    },
+    "continue": "डैशबोर्ड पर जारी रखें"
+  },
+  "dashboard": {
+    "greeting": "नमस्ते, {{name}}!",
+    "quickBalance": "त्वरित बैलेंस",
+    "spendingInsights": "खर्च अंतर्दृष्टि (Insights)",
+    "upcomingEmis": "आगामी ईएमआई (EMI)",
+    "recommendations": "आपके लिए अनुशंसित",
+    "quickActions": "त्वरित कार्य",
+    "farmerActions": {
+      "cropLoan": "फसल ऋण",
+      "weatherInsurance": "मौसम बीमा",
+      "kisanCredit": "किसान क्रेडिट कार्ड"
+    }
+  },
+  "profile": {
+    "title": "मेरी प्रोफ़ाइल",
+    "dob": "जन्म तिथि",
+    "aadhaar": "आधार नंबर",
+    "segment": "खंड (Segment)",
+    "stressLevel": "तनाव स्तर",
+    "stressLevels": {
+      "green": "स्वस्थ",
+      "yellow": "सावधानी",
+      "orange": "जोखिम में",
+      "red": "गंभीर"
+    }
+  },
+  "common": {
+    "language": "भाषा",
+    "home": "होम",
+    "profile": "प्रोफ़ाइल"
+  }
+}
