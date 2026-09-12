@@ -7,6 +7,7 @@ django-cors-headers==4.6.0
 # Database
 pymongo==4.11.3
 dnspython==2.7.0
+mongomock==4.3.0
 
 # Config
 python-dotenv==1.0.1
