@@ -22,3 +22,7 @@ ml_models/*.bin
 # IDE
 .vscode/
 .idea/
+
+# Frontend
+node_modules/
+dist/

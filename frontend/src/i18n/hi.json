@@ -1,0 +1,76 @@
+{
+  "app": {
+    "name": "बैंकबडी",
+    "tagline": "भारत के लिए एआई-संचालित व्यक्तिगत बैंकिंग"
+  },
+  "nav": {
+    "dashboard": "डैशबोर्ड",
+    "chat": "एआई सहायक",
+    "loans": "ऋण और लोन",
+    "wellness": "वित्तीय स्वास्थ्य",
+    "literacy": "सीखें और कमाएं",
+    "consent": "डेटा गोपनीयता",
+    "logout": "लॉग आउट"
+  },
+  "auth": {
+    "loginTitle": "स्वागत है",
+    "loginSubtitle": "अपने ईमेल या फोन नंबर से लॉगिन करें",
+    "identifierPlaceholder": "फोन या ईमेल (उदा. farmer@demo.com)",
+    "passwordPlaceholder": "पासवर्ड",
+    "loginButton": "लॉग इन करें",
+    "quickDemo": "डेमो खाते आज़माएं",
+    "demoFarmer": "🌾 रमेश (किसान)",
+    "demoSalaried": "💼 प्रिया (वेतनभोगी)",
+    "demoShop": "🏪 सुरेश (दुकानदार)",
+    "demoGig": "🛵 अर्जुन (गिग वर्कर)",
+    "demoStressed": "⚠️ मीना (सहायता आवश्यक)"
+  },
+  "dashboard": {
+    "welcome": "नमस्ते",
+    "balance": "कुल उपलब्ध बैलेंस",
+    "monthlyIncome": "मासिक आय",
+    "segment": "आपकी वित्तीय प्रोफ़ाइल",
+    "stressStatus": "वित्तीय स्वास्थ्य स्थिति",
+    "recentTxns": "हाल के लेनदेन",
+    "spendingInsights": "खर्च का विश्लेषण",
+    "recommendations": "आपके लिए सुझाव",
+    "whyRecommended": "यह सुझाव क्यों दिया गया?",
+    "applyNow": "आवेदन करें",
+    "viewAll": "सभी देखें"
+  },
+  "chat": {
+    "title": "बैंकिंग एआई सहायक",
+    "placeholder": "अपनी भाषा में पूछें (उदा. मेरा बैलेंस क्या है / मुझे लोन चाहिए)...",
+    "listening": "सुन रहे हैं...",
+    "send": "भेजें",
+    "quickReplies": "त्वरित सवाल",
+    "checkBalance": "बैलेंस चेक करें",
+    "applyLoan": "लोन के लिए आवेदन",
+    "emiCalc": "ईएमआई कैलकुलेटर"
+  },
+  "loan": {
+    "title": "त्वरित ऋण आवेदन",
+    "subtitle": "पारदर्शी, कोई छिपा शुल्क नहीं",
+    "step": "चरण",
+    "selectAmount": "ऋण राशि चुनें",
+    "selectTenure": "अवधि चुनें",
+    "calculatedEmi": "अनुमानित मासिक किस्त (EMI)",
+    "kycVerify": "त्वरित वीडियो / ओटीपी केवाईसी",
+    "submit": "आवेदन जमा करें",
+    "congrats": "आवेदन स्वीकृत!"
+  },
+  "stress": {
+    "alertTitle": "वित्तीय स्वास्थ्य चेतावनी",
+    "helpAction": "किस्त पुनर्गठन विकल्प देखें"
+  },
+  "consent": {
+    "title": "सहमति और डेटा गोपनीयता प्रबंधन",
+    "subtitle": "डीपीडीपी (DPDP) अधिनियम 2023 के तहत आपका अपने डेटा पर पूर्ण नियंत्रण है।",
+    "grant": "अनुमति दें",
+    "revoke": "रद्द करें",
+    "active": "सक्रिय",
+    "disabled": "निष्क्रिय",
+    "downloadData": "मेरा डेटा डाउनलोड करें",
+    "deleteData": "डेटा हटाने का अनुरोध करें"
+  }
+}

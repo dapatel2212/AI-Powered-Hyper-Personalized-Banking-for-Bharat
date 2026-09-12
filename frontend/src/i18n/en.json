@@ -1,0 +1,76 @@
+{
+  "app": {
+    "name": "BankBuddy",
+    "tagline": "AI-Powered Hyper-Personalized Banking for Bharat"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "chat": "AI Assistant",
+    "loans": "Loans & Credit",
+    "wellness": "Financial Health",
+    "literacy": "Learn & Earn",
+    "consent": "Privacy & Consent",
+    "logout": "Logout"
+  },
+  "auth": {
+    "loginTitle": "Welcome Back",
+    "loginSubtitle": "Login with your email or phone",
+    "identifierPlaceholder": "Phone or Email (e.g. farmer@demo.com)",
+    "passwordPlaceholder": "Password",
+    "loginButton": "Sign In",
+    "quickDemo": "Try Quick Demo Accounts",
+    "demoFarmer": "🌾 Ramesh (Farmer)",
+    "demoSalaried": "💼 Priya (Salaried)",
+    "demoShop": "🏪 Suresh (Kirana)",
+    "demoGig": "🛵 Arjun (Gig Worker)",
+    "demoStressed": "⚠️ Meena (Needs Support)"
+  },
+  "dashboard": {
+    "welcome": "Welcome back",
+    "balance": "Total Available Balance",
+    "monthlyIncome": "Monthly Income",
+    "segment": "Your Financial Profile",
+    "stressStatus": "Financial Wellness Status",
+    "recentTxns": "Recent Transactions",
+    "spendingInsights": "Spending Insights",
+    "recommendations": "Smart Recommendations For You",
+    "whyRecommended": "Why is this recommended?",
+    "applyNow": "Apply Now",
+    "viewAll": "View All"
+  },
+  "chat": {
+    "title": "Banking AI Assistant",
+    "placeholder": "Ask in your language (e.g. Mera balance kya hai / Mujhe loan chahiye)...",
+    "listening": "Listening...",
+    "send": "Send",
+    "quickReplies": "Quick Questions",
+    "checkBalance": "Check Balance",
+    "applyLoan": "Apply for Loan",
+    "emiCalc": "EMI Calculator"
+  },
+  "loan": {
+    "title": "Instant Loan Application",
+    "subtitle": "Personalized, transparent, zero hidden charges",
+    "step": "Step",
+    "selectAmount": "Select Loan Amount",
+    "selectTenure": "Select Tenure",
+    "calculatedEmi": "Estimated Monthly EMI",
+    "kycVerify": "Quick Video / OTP KYC",
+    "submit": "Submit Application",
+    "congrats": "Application Approved!"
+  },
+  "stress": {
+    "alertTitle": "Financial Health Alert",
+    "helpAction": "Review Restructure Options"
+  },
+  "consent": {
+    "title": "Consent & Data Privacy Manager",
+    "subtitle": "Under the Digital Personal Data Protection (DPDP) Act 2023, you have full control over your data.",
+    "grant": "Grant",
+    "revoke": "Revoke",
+    "active": "Active",
+    "disabled": "Disabled",
+    "downloadData": "Download My Data",
+    "deleteData": "Request Data Erasure"
+  }
+}
