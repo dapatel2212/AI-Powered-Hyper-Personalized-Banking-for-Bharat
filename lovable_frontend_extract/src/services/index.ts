@@ -1,0 +1,10 @@
+import { demoCustomers, categories, spending, lessons } from "@/data/bankbuddy";
+const wait=<T>(data:T)=>new Promise<T>(resolve=>setTimeout(()=>resolve(data),260));
+export const customerService={getProfile:(id:string)=>wait(demoCustomers.find(x=>x.id===id)??demoCustomers[0])};
+export const transactionService={getInsights:()=>wait({categories,spending})};
+export const recommendationService={getRecommendations:(id:string)=>wait((demoCustomers.find(x=>x.id===id)??demoCustomers.at(0))?.recommendations??[]),accept:(id:string)=>wait({ok:true,id}),reject:(id:string)=>wait({ok:true,id})};
+export const stressService={getScore:(id:string)=>wait(demoCustomers.find(x=>x.id===id)?.stress??22)};
+export const consentService={grant:(type:string)=>wait({ok:true,type}),revoke:(type:string)=>wait({ok:true,type}),download:()=>wait({ok:true})};
+export const loanService={calculateEMI:(amount:number,months:number)=>wait({emi:Math.round((amount*(.102/12)*Math.pow(1+.102/12,months))/(Math.pow(1+.102/12,months)-1))}),apply:()=>wait({applicationId:"BB-2026-1842",status:"approved"})};
+export const literacyService={getLessons:()=>wait(lessons)};
+export const chatService={sendMessage:(message:string,stressed:boolean)=>wait({response:stressed&&/loan|कर्ज|लोन/i.test(message)?"I won’t suggest a new loan right now because supporting your financial health matters more. Let’s look at EMI restructuring options.":"I can help with that. I’ve checked your current financial picture and found the safest next step for you."})};
