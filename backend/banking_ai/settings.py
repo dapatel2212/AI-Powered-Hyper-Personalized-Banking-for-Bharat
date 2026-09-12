@@ -88,7 +88,7 @@ MONGODB_NAME = os.getenv('MONGODB_NAME', 'banking_ai')
 # --- DRF ---
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'utils.auth.MongoJWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
