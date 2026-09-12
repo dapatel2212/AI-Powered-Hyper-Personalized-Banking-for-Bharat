@@ -22,9 +22,13 @@ export default function LoginPage() {
     }
   };
 
-  const handleDemoSelect = async (email) => {
+  const handleDemoSelect = async (email, demoLang = 'en') => {
     setIdentifier(email);
     setPassword('Demo@123');
+    if (demoLang) {
+      await i18n.changeLanguage(demoLang);
+      localStorage.setItem('preferred_language', demoLang);
+    }
     try {
       await login(email, 'Demo@123');
       navigate('/');
@@ -104,47 +108,47 @@ export default function LoginPage() {
             <div className="grid grid-cols-1 gap-2">
               <button
                 type="button"
-                onClick={() => handleDemoSelect('farmer@demo.com')}
+                onClick={() => handleDemoSelect('farmer@demo.com', 'hi')}
                 className="text-left px-3 py-2 text-xs font-medium rounded-lg border border-green-200 bg-green-50 text-green-900 hover:bg-green-100 transition-colors flex items-center justify-between"
               >
                 <span>🌾 <b>Ramesh</b> (Farmer / Seasonal)</span>
-                <span className="text-[10px] bg-green-200 text-green-800 px-1.5 py-0.5 rounded">Healthy (22)</span>
+                <span className="text-[10px] bg-green-200 text-green-800 px-1.5 py-0.5 rounded font-mono">Hindi (22)</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => handleDemoSelect('salaried@demo.com')}
+                onClick={() => handleDemoSelect('salaried@demo.com', 'ta')}
                 className="text-left px-3 py-2 text-xs font-medium rounded-lg border border-blue-200 bg-blue-50 text-blue-900 hover:bg-blue-100 transition-colors flex items-center justify-between"
               >
                 <span>💼 <b>Priya</b> (Prudent Saver)</span>
-                <span className="text-[10px] bg-blue-200 text-blue-800 px-1.5 py-0.5 rounded">Healthy (18)</span>
+                <span className="text-[10px] bg-blue-200 text-blue-800 px-1.5 py-0.5 rounded font-mono">Tamil (18)</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => handleDemoSelect('shop@demo.com')}
+                onClick={() => handleDemoSelect('shop@demo.com', 'hi')}
                 className="text-left px-3 py-2 text-xs font-medium rounded-lg border border-yellow-200 bg-yellow-50 text-yellow-900 hover:bg-yellow-100 transition-colors flex items-center justify-between"
               >
                 <span>🏪 <b>Suresh</b> (Kirana / Digital Native)</span>
-                <span className="text-[10px] bg-yellow-200 text-yellow-800 px-1.5 py-0.5 rounded">Caution (45)</span>
+                <span className="text-[10px] bg-yellow-200 text-yellow-800 px-1.5 py-0.5 rounded font-mono">Hindi (45)</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => handleDemoSelect('gig@demo.com')}
+                onClick={() => handleDemoSelect('gig@demo.com', 'en')}
                 className="text-left px-3 py-2 text-xs font-medium rounded-lg border border-purple-200 bg-purple-50 text-purple-900 hover:bg-purple-100 transition-colors flex items-center justify-between"
               >
                 <span>🛵 <b>Arjun</b> (Gig Worker)</span>
-                <span className="text-[10px] bg-purple-200 text-purple-800 px-1.5 py-0.5 rounded">Healthy (30)</span>
+                <span className="text-[10px] bg-purple-200 text-purple-800 px-1.5 py-0.5 rounded font-mono">English (30)</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => handleDemoSelect('stressed@demo.com')}
+                onClick={() => handleDemoSelect('stressed@demo.com', 'mr')}
                 className="text-left px-3 py-2 text-xs font-medium rounded-lg border border-red-200 bg-red-50 text-red-900 hover:bg-red-100 transition-colors flex items-center justify-between"
               >
                 <span>⚠️ <b>Meena</b> (Stressed Account)</span>
-                <span className="text-[10px] bg-red-200 text-red-800 px-1.5 py-0.5 rounded font-bold">At Risk (72)</span>
+                <span className="text-[10px] bg-red-200 text-red-800 px-1.5 py-0.5 rounded font-bold font-mono">Marathi (72)</span>
               </button>
             </div>
           </div>

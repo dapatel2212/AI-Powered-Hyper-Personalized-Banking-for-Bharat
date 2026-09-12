@@ -1,0 +1,76 @@
+{
+  "app": {
+    "name": "बँकबडी (BankBuddy)",
+    "tagline": "भारतासाठी एआय-सक्षम वैयक्तिकृत बँकिंग"
+  },
+  "nav": {
+    "dashboard": "डॅशबोर्ड",
+    "chat": "एआय सहाय्यक",
+    "loans": "कर्ज आणि क्रेडिट",
+    "wellness": "आर्थिक आरोग्य",
+    "literacy": "शिका आणि कमवा",
+    "consent": "डेटा गोपनीयता",
+    "logout": "बाहेर पडा"
+  },
+  "auth": {
+    "loginTitle": "स्वागत आहे",
+    "loginSubtitle": "ईमेल किंवा फोन नंबरने लॉगिन करा",
+    "identifierPlaceholder": "फोन किंवा ईमेल (उदा. stressed@demo.com)",
+    "passwordPlaceholder": "पासवर्ड",
+    "loginButton": "लॉगिन करा",
+    "quickDemo": "डेमो खाती वापरून पहा",
+    "demoFarmer": "🌾 रमेश (शेतकरी)",
+    "demoSalaried": "💼 प्रिया (नोकरदार)",
+    "demoShop": "🏪 सुरेश (दुकानदार)",
+    "demoGig": "🛵 अर्जुन (गिग वर्कर)",
+    "demoStressed": "⚠️ मीना (मदत आवश्यक)"
+  },
+  "dashboard": {
+    "welcome": "नमस्कार",
+    "balance": "एकूण उपलब्ध शिल्लक",
+    "monthlyIncome": "मासिक उत्पन्न",
+    "segment": "तुमची आर्थिक प्रोफाइल",
+    "stressStatus": "आर्थिक आरोग्य स्थिती",
+    "recentTxns": "अलीकडील व्यवहार",
+    "spendingInsights": "खर्च विश्लेषण",
+    "recommendations": "तुमच्यासाठी शिफारसी",
+    "whyRecommended": "ही शिफारस का केली?",
+    "applyNow": "अर्ज करा",
+    "viewAll": "सर्व पहा"
+  },
+  "chat": {
+    "title": "बँकिंग एआय सहाय्यक",
+    "placeholder": "तुमच्या भाषेत विचारा (उदा. माझी शिल्लक किती आहे / मला कर्ज हवे आहे)...",
+    "listening": "ऐकत आहे...",
+    "send": "पाठवा",
+    "quickReplies": "जलद प्रश्न",
+    "checkBalance": "शिल्लक तपासा",
+    "applyLoan": "कर्जासाठी अर्ज करा",
+    "emiCalc": "ईएमआय कॅल्क्युलेटर"
+  },
+  "loan": {
+    "title": "झटपट कर्ज अर्ज",
+    "subtitle": "पारदर्शक, कोणतेही लपलेले शुल्क नाही",
+    "step": "पायरी",
+    "selectAmount": "कर्ज रक्कम निवडा",
+    "selectTenure": "कालावधी निवडा",
+    "calculatedEmi": "अंदाजे मासिक हप्ता (EMI)",
+    "kycVerify": "व्हिडिओ / ओटीपी केवायसी",
+    "submit": "अर्ज सादर करा",
+    "congrats": "अर्ज मंजूर झाला!"
+  },
+  "stress": {
+    "alertTitle": "आर्थिक स्थिती इशारा",
+    "helpAction": "हप्ता पुनर्रचना पर्याय पहा"
+  },
+  "consent": {
+    "title": "संमती आणि डेटा गोपनीयता",
+    "subtitle": "DPDP कायदा २०२३ अंतर्गत तुमच्या डेटावर तुमचे पूर्ण नियंत्रण आहे.",
+    "grant": "परवानगी द्या",
+    "revoke": "रद्द करा",
+    "active": "सक्रिय",
+    "disabled": "निष्क्रिय",
+    "downloadData": "माझा डेटा डाउनलोड करा",
+    "deleteData": "डेटा हटवण्याची विनंती करा"
+  }
+}

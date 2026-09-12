@@ -1,4 +1,8 @@
 from django.urls import path
+from . import views
 
 urlpatterns = [
+    path('eligibility/<str:customer_id>/', views.loan_eligibility, name='loan-eligibility'),
+    path('emi-calculate/', views.emi_calculate, name='emi-calculate'),
+    path('apply/', views.loan_apply, name='loan-apply'),
 ]

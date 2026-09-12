@@ -4,18 +4,21 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { useAuthStore } from '../store/authStore';
 import { useCustomerStore } from '../store/customerStore';
 import { transactionService } from '../services/transactionService';
+import { recommendationService } from '../services/recommendationService';
 import { SEGMENTS, STRESS_COLORS } from '../constants';
 
 const COLORS = ['#16a34a', '#0284c7', '#f59e0b', '#8b5cf6', '#ec4899', '#64748b'];
 
 export default function DashboardPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { customer } = useAuthStore();
   const { profile, segment, stressLevel, fetchProfile } = useCustomerStore();
 
   const [insights, setInsights] = useState(null);
   const [transactions, setTransactions] = useState([]);
+  const [recommendations, setRecommendations] = useState([]);
   const [selectedShap, setSelectedShap] = useState(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   const customerId = customer?.customer_id;
 
@@ -26,46 +29,53 @@ export default function DashboardPage() {
       transactionService.getTransactions(customerId, { page_size: 5 })
         .then((res) => setTransactions(res.results || []))
         .catch(() => {});
+      recommendationService.getRecommendations(customerId)
+        .then((res) => setRecommendations(res.recommendations || []))
+        .catch(() => {});
     }
   }, [customerId, fetchProfile]);
+
+  const speakText = (text) => {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    if (isSpeaking) {
+      setIsSpeaking(false);
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(text);
+    const lang = (i18n.language || 'en').split('-')[0];
+    const voiceMap = { hi: 'hi-IN', ta: 'ta-IN', mr: 'mr-IN', en: 'en-IN' };
+    utterance.lang = voiceMap[lang] || 'en-IN';
+    utterance.rate = 0.95;
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    window.speechSynthesis.speak(utterance);
+  };
 
   const segInfo = segment ? SEGMENTS[segment] : null;
   const stressInfo = stressLevel ? STRESS_COLORS[stressLevel] : STRESS_COLORS['GREEN'];
 
-  // Mock recommendations based on segment if backend engine still in training
-  const defaultRecommendations = [
+  // Default recommendations fallback if backend catalog empty
+  const activeRecs = recommendations.length > 0 ? recommendations : [
     {
-      id: 'rec_1',
-      product: segment === 'seasonal_earners' ? 'Weather Insurance' : (segment === 'stressed_accounts' ? 'EMI Date Shift & Restructure' : 'Tax-Saver Mutual Fund SIP'),
+      product_id: 'rec_1',
+      product_name: segment === 'seasonal_earners' ? 'Weather & Crop Insurance' : (segment === 'stressed_accounts' ? 'EMI Date Shift & Restructure' : 'Tax-Saver Mutual Fund SIP'),
       category: segment === 'stressed_accounts' ? 'Financial Health' : 'Investment & Protection',
-      matchScore: 92,
-      isBlocked: segment === 'stressed_accounts' && false,
-      shap: [
-        { feature: 'Seasonal Kharif crop spend detected', contribution: '+28%' },
-        { feature: 'No existing crop/weather coverage', contribution: '+22%' },
-        { feature: 'Consistent seasonal repayment discipline', contribution: '+15%' }
+      match_score_pct: 92,
+      shap_explanation: [
+        { text: 'Seasonal Kharif crop spend detected', contribution: '+28%' },
+        { text: 'Zero existing crop/weather coverage', contribution: '+22%' }
       ],
       description: segment === 'seasonal_earners'
-        ? 'Protect your crop yield against unseasonal rainfall and drought.'
+        ? 'Protect your crop yield against unseasonal rainfall, drought, and temperature shocks.'
         : (segment === 'stressed_accounts'
           ? 'Reduce monthly EMI burden by 30% without affecting credit score.'
           : 'Save up to ₹46,800 under Section 80C with flexible ₹500/month investments.')
-    },
-    {
-      id: 'rec_2',
-      product: segment === 'seasonal_earners' ? 'Kisan Credit Card Line' : 'Emergency Health Cover',
-      category: 'Credit & Insurance',
-      matchScore: 84,
-      isBlocked: segment === 'stressed_accounts',
-      shap: [
-        { feature: 'Regular fertilizer & agri purchases', contribution: '+24%' },
-        { feature: 'Subsidized 4% interest rate eligibility', contribution: '+19%' }
-      ],
-      description: 'Interest subvention credit up to ₹3 Lakhs with flexible harvest-cycle payments.'
     }
   ];
 
-  const pieData = insights?.category_breakdown
+  const pieData = insights?.category_breakdown && Object.keys(insights.category_breakdown).length > 0
     ? Object.entries(insights.category_breakdown).map(([name, val]) => ({
         name: name.replace('_', ' ').toUpperCase(),
         value: Math.round(val * 100)
@@ -80,9 +90,9 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* 1. Stress Alert Banner (Guardrail alert) */}
+      {/* 1. Stress Alert Banner (Ethical Guardrail alert) */}
       {(stressLevel === 'ORANGE' || stressLevel === 'RED') && (
-        <div className="bg-red-50 border-l-4 border-red-600 p-4 rounded-xl shadow-sm flex items-start justify-between">
+        <div className="bg-red-50 border-l-4 border-red-600 p-4 rounded-xl shadow-sm flex items-start justify-between animate-in fade-in">
           <div>
             <div className="flex items-center space-x-2">
               <span className="text-xl">⚠️</span>
@@ -90,10 +100,13 @@ export default function DashboardPage() {
             </div>
             <p className="mt-1 text-xs text-red-700 leading-relaxed">
               We detected consecutive EMI bounces and declining balance trend. Under responsible banking guidelines,
-              <b> all high-interest predatory loan offers have been frozen</b>. We are here to help you regain financial stability.
+              <b> all high-interest predatory loan offers have been frozen</b>. We offer personalized debt relief and restructuring.
             </p>
           </div>
-          <button className="shrink-0 ml-4 px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-600 text-white hover:bg-red-700 shadow-sm transition">
+          <button
+            onClick={() => alert('EMI restructure request logged. Your interest has been frozen for 30 days.')}
+            className="shrink-0 ml-4 px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-600 text-white hover:bg-red-700 shadow-sm transition"
+          >
             {t('stress.helpAction')}
           </button>
         </div>
@@ -102,11 +115,20 @@ export default function DashboardPage() {
       {/* 2. Top Profile & Balance Header */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <div className="bg-gradient-to-br from-green-700 to-emerald-800 rounded-2xl p-5 text-white shadow-md flex flex-col justify-between">
-          <div>
-            <span className="text-xs uppercase tracking-wider text-green-200 font-semibold">
-              {t('dashboard.balance')}
-            </span>
-            <div className="text-3xl font-extrabold mt-1">₹42,850.00</div>
+          <div className="flex justify-between items-start">
+            <div>
+              <span className="text-xs uppercase tracking-wider text-green-200 font-semibold">
+                {t('dashboard.balance')}
+              </span>
+              <div className="text-3xl font-extrabold mt-1">₹42,850.00</div>
+            </div>
+            <button
+              onClick={() => speakText(`Aapka kul upalabdha balance biyaalees hazaar aath sau pachaas rupaye hai.`)}
+              className="p-2 rounded-lg bg-green-600/60 hover:bg-green-600 text-white text-xs transition"
+              title="Listen in your language"
+            >
+              🔊
+            </button>
           </div>
           <div className="pt-4 border-t border-green-600/50 flex items-center justify-between text-xs text-green-100">
             <span>Customer ID: {customerId}</span>
@@ -125,8 +147,11 @@ export default function DashboardPage() {
             </div>
             <p className="text-xs text-gray-600 mt-1">{segInfo?.desc}</p>
           </div>
-          <div className="text-xs text-green-700 font-medium pt-3 border-t border-gray-100">
-            ✓ Vernacular Personalization Active
+          <div className="text-xs text-green-700 font-medium pt-3 border-t border-gray-100 flex items-center justify-between">
+            <span>✓ Vernacular Engine Active</span>
+            <span className="text-[10px] uppercase bg-green-100 text-green-800 px-1.5 py-0.5 rounded font-semibold">
+              {i18n.language}
+            </span>
           </div>
         </div>
 
@@ -168,46 +193,63 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {defaultRecommendations.map((rec) => (
-            <div
-              key={rec.id}
-              className="border border-gray-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white hover:shadow-sm transition-all flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100/60 px-2 py-0.5 rounded">
-                    {rec.category}
-                  </span>
-                  <span className="text-xs font-semibold text-gray-500">
-                    Match: {rec.matchScore}%
-                  </span>
+          {activeRecs.map((rec) => {
+            const isLoanLocked = (stressLevel === 'ORANGE' || stressLevel === 'RED') && rec.category === 'loan';
+            return (
+              <div
+                key={rec.product_id}
+                className="border border-gray-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white hover:shadow-sm transition-all flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100/60 px-2 py-0.5 rounded">
+                      {rec.category}
+                    </span>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => speakText(`${rec.product_name}. ${rec.description}`)}
+                        className="text-xs hover:scale-110 transition"
+                        title="Listen to recommendation"
+                      >
+                        🔊
+                      </button>
+                      <span className="text-xs font-semibold text-gray-500">
+                        Match: {rec.match_score_pct || 88}%
+                      </span>
+                    </div>
+                  </div>
+                  <h3 className="font-bold text-gray-900 text-sm mt-2">{rec.product_name}</h3>
+                  <p className="text-xs text-gray-600 mt-1 leading-relaxed">{rec.description}</p>
                 </div>
-                <h3 className="font-bold text-gray-900 text-sm mt-2">{rec.product}</h3>
-                <p className="text-xs text-gray-600 mt-1 leading-relaxed">{rec.description}</p>
-              </div>
 
-              <div className="mt-4 pt-3 border-t border-gray-200 flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => setSelectedShap(rec)}
-                  className="text-xs font-semibold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
-                >
-                  <span>ℹ️</span>
-                  <span>{t('dashboard.whyRecommended')}</span>
-                </button>
+                <div className="mt-4 pt-3 border-t border-gray-200 flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedShap(rec)}
+                    className="text-xs font-semibold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
+                  >
+                    <span>ℹ️</span>
+                    <span>{t('dashboard.whyRecommended')}</span>
+                  </button>
 
-                <button
-                  type="button"
-                  disabled={rec.isBlocked}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg text-white shadow-sm transition ${
-                    rec.isBlocked ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-700 hover:bg-green-800'
-                  }`}
-                >
-                  {rec.isBlocked ? 'Temporarily Blocked' : t('dashboard.applyNow')}
-                </button>
+                  <button
+                    type="button"
+                    disabled={isLoanLocked}
+                    onClick={() => {
+                      if (!isLoanLocked) {
+                        alert(`Proceeding with ${rec.product_name}. Pre-approval verified!`);
+                      }
+                    }}
+                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg text-white shadow-sm transition ${
+                      isLoanLocked ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-700 hover:bg-green-800'
+                    }`}
+                  >
+                    {isLoanLocked ? 'Guardrail Blocked' : t('dashboard.applyNow')}
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -217,8 +259,8 @@ export default function DashboardPage() {
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-gray-200 animate-in fade-in">
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="font-bold text-gray-900 text-base">Explainable AI Breakdown</h3>
-                <p className="text-xs text-gray-500 mt-0.5">{selectedShap.product}</p>
+                <h3 className="font-bold text-gray-900 text-base">Explainable AI (SHAP Breakdown)</h3>
+                <p className="text-xs text-gray-500 mt-0.5">{selectedShap.product_name}</p>
               </div>
               <button
                 onClick={() => setSelectedShap(null)}
@@ -229,13 +271,13 @@ export default function DashboardPage() {
             </div>
 
             <p className="text-xs text-gray-600 mt-3 leading-relaxed">
-              Our transparent AI model analyzed your 6-month transaction behavior and identified these key factors:
+              Our explainable AI analyzed your 6-month transaction behavior and identified these key factor contributions:
             </p>
 
             <div className="mt-4 space-y-2.5">
-              {selectedShap.shap.map((s, idx) => (
+              {(selectedShap.shap_explanation || []).map((s, idx) => (
                 <div key={idx} className="bg-slate-50 p-2.5 rounded-lg border border-gray-200 flex items-center justify-between text-xs">
-                  <span className="text-gray-800 font-medium">{s.feature}</span>
+                  <span className="text-gray-800 font-medium">{s.text}</span>
                   <span className="font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">{s.contribution}</span>
                 </div>
               ))}
@@ -310,7 +352,7 @@ export default function DashboardPage() {
           <div className="space-y-2.5">
             {transactions.length > 0 ? (
               transactions.map((tx, idx) => (
-                <div key={idx} className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-gray-100 text-xs">
+                <div key={idx} className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-gray-100 text-xs hover:bg-white transition">
                   <div>
                     <div className="font-semibold text-gray-900">{tx.description || tx.merchant || 'UPI Transfer'}</div>
                     <div className="text-[10px] text-gray-500 uppercase">{tx.category} • {tx.channel}</div>
