@@ -9,5 +9,6 @@ auth_urlpatterns = [
 ]
 
 urlpatterns = [
-    # Customer CRUD endpoints (Task 4)
+    path('<str:customer_id>/', views.customer_detail, name='customer-detail'),
+    path('<str:customer_id>/segment/', views.customer_segment, name='customer-segment'),
 ]

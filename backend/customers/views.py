@@ -168,3 +168,63 @@ def profile(request):
     Return current authenticated customer profile.
     """
     return Response(request.user.data)
+
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def customer_detail(request, customer_id):
+    """
+    GET /api/customers/{id}/ — full profile from MongoDB
+    PUT /api/customers/{id}/ — update language, preferences
+    """
+    customers_col = get_collection('customers')
+
+    if request.method == 'GET':
+        customer = customers_col.find_one(
+            {'customer_id': customer_id},
+            {'_id': 0, 'password': 0}
+        )
+        if not customer:
+            return Response({'error': 'Customer not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(customer)
+
+    elif request.method == 'PUT':
+        update_data = {k: v for k, v in request.data.items() if k not in ('_id', 'password', 'customer_id')}
+        update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+
+        res = customers_col.update_one(
+            {'customer_id': customer_id},
+            {'$set': update_data}
+        )
+        if res.matched_count == 0:
+            return Response({'error': 'Customer not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        updated = customers_col.find_one(
+            {'customer_id': customer_id},
+            {'_id': 0, 'password': 0}
+        )
+        return Response(updated)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def customer_segment(request, customer_id):
+    """
+    GET /api/customers/{id}/segment/ — current segment + description text
+    """
+    from utils.constants import SEGMENT_NAMES, SEGMENT_DESCRIPTIONS
+
+    customer = get_collection('customers').find_one(
+        {'customer_id': customer_id},
+        {'_id': 0, 'segment': 1, 'customer_id': 1}
+    )
+    if not customer:
+        return Response({'error': 'Customer not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    segment_key = customer.get('segment', 'prudent_savers')
+    return Response({
+        'customer_id': customer_id,
+        'segment': segment_key,
+        'name': SEGMENT_NAMES.get(segment_key, segment_key.replace('_', ' ').title()),
+        'description': SEGMENT_DESCRIPTIONS.get(segment_key, '')
+    })

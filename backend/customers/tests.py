@@ -101,3 +101,65 @@ class AuthTests(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.data['customer_id'], 'CUST_123')
         self.assertEqual(res.data['name'], 'Test User')
+
+    @patch('utils.auth.get_collection')
+    @patch('customers.views.get_collection')
+    def test_get_customer_detail(self, mock_views_coll, mock_auth_coll):
+        customer = {
+            'customer_id': 'CUST_001',
+            'name': 'Ramesh Kumar',
+            'language': 'hi',
+            'segment': 'seasonal_earners'
+        }
+        mock_auth_coll.return_value.find_one.return_value = customer
+        mock_views_coll.return_value.find_one.return_value = customer
+
+        tokens = get_tokens_for_customer(customer)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {tokens['access']}")
+
+        res = self.client.get('/api/customers/CUST_001/')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data['customer_id'], 'CUST_001')
+        self.assertEqual(res.data['name'], 'Ramesh Kumar')
+
+    @patch('utils.auth.get_collection')
+    @patch('customers.views.get_collection')
+    def test_update_customer(self, mock_views_coll, mock_auth_coll):
+        customer = {
+            'customer_id': 'CUST_001',
+            'name': 'Ramesh Kumar',
+            'language': 'hi',
+            'segment': 'seasonal_earners'
+        }
+        updated_customer = {**customer, 'language': 'ta'}
+        mock_auth_coll.return_value.find_one.return_value = customer
+        mock_views = MagicMock()
+        mock_views.update_one.return_value.matched_count = 1
+        mock_views.find_one.return_value = updated_customer
+        mock_views_coll.return_value = mock_views
+
+        tokens = get_tokens_for_customer(customer)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {tokens['access']}")
+
+        res = self.client.put('/api/customers/CUST_001/', {'language': 'ta'}, format='json')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data['language'], 'ta')
+
+    @patch('utils.auth.get_collection')
+    @patch('customers.views.get_collection')
+    def test_get_customer_segment(self, mock_views_coll, mock_auth_coll):
+        customer = {
+            'customer_id': 'CUST_001',
+            'segment': 'seasonal_earners'
+        }
+        mock_auth_coll.return_value.find_one.return_value = customer
+        mock_views_coll.return_value.find_one.return_value = customer
+
+        tokens = get_tokens_for_customer(customer)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {tokens['access']}")
+
+        res = self.client.get('/api/customers/CUST_001/segment/')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data['segment'], 'seasonal_earners')
+        self.assertIn('Seasonal Earners', res.data['name'])
+        self.assertTrue(len(res.data['description']) > 0)

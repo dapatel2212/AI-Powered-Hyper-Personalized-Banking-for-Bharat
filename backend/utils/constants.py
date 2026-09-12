@@ -7,6 +7,15 @@ SEGMENTS = [
     'digital_natives', 'seasonal_earners', 'stressed_accounts',
 ]
 
+SEGMENT_NAMES = {
+    'prudent_savers': 'Prudent Savers',
+    'aspiring_spenders': 'Aspiring Spenders',
+    'family_builders': 'Family Builders',
+    'digital_natives': 'Digital Natives',
+    'seasonal_earners': 'Seasonal Earners (Farmers)',
+    'stressed_accounts': 'Stressed Accounts',
+}
+
 SEGMENT_DESCRIPTIONS = {
     'prudent_savers': 'Consistent salary, high savings rate, low spend',
     'aspiring_spenders': 'Young, rising income, high discretionary spend',
