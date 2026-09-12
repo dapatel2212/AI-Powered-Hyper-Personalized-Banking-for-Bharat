@@ -73,7 +73,7 @@ def transaction_insights(request, customer_id):
                         }
                     },
                     {'$sort': {'_id': 1}},
-                    {'$project': {'month': '$_id', 'amount': {'$round': ['$amount', 2]}, '_id': 0}}
+                    {'$project': {'month': '$_id', 'amount': '$amount', '_id': 0}}
                 ],
                 'totals': [
                     {
@@ -137,8 +137,13 @@ def transaction_insights(request, customer_id):
     else:
         income_trend = 'stable'
 
+    monthly_spend = [
+        {'month': m.get('month', m.get('_id')), 'amount': round(m.get('amount', 0), 2)}
+        for m in data.get('monthly_spend', [])
+    ]
+
     return Response({
-        'monthly_spend': data.get('monthly_spend', []),
+        'monthly_spend': monthly_spend,
         'category_breakdown': category_breakdown,
         'savings_rate': max(0.0, savings_rate),
         'income_trend': income_trend
